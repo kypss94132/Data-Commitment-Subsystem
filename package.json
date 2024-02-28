@@ -237,8 +237,8 @@
     ],
     "publish": {
       "provider": "github",
-      "owner": "electron-react-boilerplate",
-      "repo": "electron-react-boilerplate"
+      "owner": "YbJerry",
+      "repo": "DIS_platform"
     }
   },
   "collective": {
