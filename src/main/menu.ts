@@ -198,8 +198,20 @@ export default class MenuBuilder {
         label: '&File',
         submenu: [
           {
+            label: '&New',
+            accelerator: 'Ctrl+N',
+          },
+          {
             label: '&Open',
             accelerator: 'Ctrl+O',
+          },
+          {
+            label: '&Save',
+            accelerator: 'Ctrl+S',
+          },
+          {
+            label: '&Save as',
+            accelerator: 'Ctrl+Shift+S',
           },
           {
             label: '&Close',
