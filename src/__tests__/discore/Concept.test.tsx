@@ -1,4 +1,4 @@
-import { DISOntology } from '../../main/discore/ontology';
+import DISOntology from '../../main/discore/ontology';
 
 const onto = new DISOntology();
 
