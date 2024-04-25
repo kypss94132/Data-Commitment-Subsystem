@@ -1,5 +1,6 @@
 import { useContext, useState } from 'react';
 import ontology from '../Ontology';
+import Edit from './Edit';
 
 interface AtomProps {
   isNew: boolean;
@@ -7,30 +8,39 @@ interface AtomProps {
 }
 
 function Atom({ isNew, atomName }: AtomProps) {
-  // const [name, setName] = useState(name);
-  // const [desc, setDesc] = useState(description);
-
-  // if (isNew) {
-  //   return <NewAtom />;
-  // }
   const onto = useContext(ontology);
-  const atom = onto.getAtom(atomName)!;
+  const atom = onto.getAtom(atomName);
 
-  return (
+  if (atom === null) {
+    alert('Atom not found');
+  }
+
+  const [name, setName] = useState(atom!.name);
+  const [desc, setDesc] = useState(atom!.description);
+
+  const content = (
     <>
-      <div className="btn">Edit</div>
-      {/* <div className="btn">Edit</div>
-      <div className="btn">Edit</div> */}
-      <div className="grid gap-4 grid-cols-[minmax(20ch,_auto)_1fr]">
-        <div className="label">Name</div>
-        <input className="input input-bordered" type="text" value={atom.name} />
-        <div className="label">Description</div>
-        <textarea
-          className="textarea textarea-bordered"
-          value={atom.description!}
-        />
-      </div>
+      <div className="label">Name</div>
+      <input
+        className="input input-bordered"
+        type="text"
+        readOnly
+        value={name}
+        onChange={(e) => {
+          setName(e.target.value);
+        }}
+      />
+      <div className="label">Description</div>
+      <textarea
+        className="textarea textarea-bordered"
+        value={desc}
+        onChange={(e) => {
+          setDesc(e.target.value);
+        }}
+      />
     </>
   );
+
+  return Edit({ isNew, content, onAdd: () => {} });
 }
 export default Atom;
