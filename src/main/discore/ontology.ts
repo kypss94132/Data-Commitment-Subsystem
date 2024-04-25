@@ -1,7 +1,7 @@
 import { DOMParser } from '@xmldom/xmldom';
 import xpath from 'xpath';
 import { createElementWithText, node2elem } from './utils';
-import { DISAtom, DISConcept, DISEdge, DISGraph } from './type';
+import { DISGetType, DISSetType } from './type';
 
 /**
  * A help function to add or update a child element in an XML element.
@@ -136,7 +136,7 @@ class DISOntology {
     return nameNode.textContent!;
   }
 
-  public setAtom(atom: DISAtom): void {
+  public setAtom(atom: DISSetType.Atom): void {
     this.verifyInit();
     const atomDomainNode = xpath.select1(
       '/ontology/atomDomain',
@@ -161,7 +161,7 @@ class DISOntology {
     setItem(atomElem, 'description', atom.description);
   }
 
-  public getAtom(name: string): DISAtom | null {
+  public getAtom(name: string): DISGetType.Atom | null {
     this.verifyInit();
     const atomNode = xpath.select1(
       `/ontology/atomDomain/atom[name="${name}"]`,
@@ -182,7 +182,7 @@ class DISOntology {
     };
   }
 
-  public getAllAtoms(): DISAtom[] {
+  public getAllAtoms(): DISGetType.Atom[] {
     this.verifyInit();
     const atomNodes = xpath.select(
       '/ontology/atomDomain/atom',
@@ -227,7 +227,7 @@ class DISOntology {
     // TODO: how to remove all concepts related to this atom?
   }
 
-  public setConcept(concept: DISConcept): void {
+  public setConcept(concept: DISSetType.Concept): void {
     this.verifyInit();
 
     let conceptNode = xpath.select1(
@@ -260,7 +260,7 @@ class DISOntology {
     );
   }
 
-  public getConcept(name: string): DISConcept | null {
+  public getConcept(name: string): DISGetType.Concept | null {
     this.verifyInit();
 
     const conceptNode = xpath.select1(
@@ -292,7 +292,7 @@ class DISOntology {
     };
   }
 
-  public getAllConcepts(): DISConcept[] {
+  public getAllConcepts(): DISGetType.Concept[] {
     this.verifyInit();
 
     const conceptNodes = xpath.select(
@@ -354,6 +354,13 @@ class DISOntology {
     }
   }
 
+  /**
+   * Check whether a virtual concept exists or not.
+   * For now, the virtual concept is just a string.
+   * So we don't provide a getter for it.
+   * @param name the name of the virtual concept to get
+   * @returns whether the virtual concept exists or not
+   */
   public hasVirtualConcept(name: string): boolean {
     this.verifyInit();
 
@@ -378,7 +385,14 @@ class DISOntology {
     }
   }
 
-  public setRootedGraph(graph: DISGraph): void {
+  /**
+   * Set a rooted graph in the ontology.
+   * If the graph does not exist, it will be created. But the root must exist.
+   * Noticed that this function will only set the graph's name, description and root.
+   * It will not set the edges. Use setRelation to set edges.
+   * @param graph the graph to set
+   */
+  public setRootedGraph(graph: DISSetType.Graph): void {
     this.verifyInit();
 
     let graphNode = xpath.select1(
@@ -413,7 +427,7 @@ class DISOntology {
     setItem(graphElem, 'rootedAt', graph.rootedAt);
   }
 
-  public getRootedGraph(name: string): DISGraph | null {
+  public getRootedGraph(name: string): DISGetType.Graph | null {
     this.verifyInit();
 
     const graphNode = xpath.select1(
@@ -474,7 +488,7 @@ class DISOntology {
     }
   }
 
-  public setRelation(edge: DISEdge, graphName: string): void {
+  public setRelation(edge: DISSetType.Edge, graphName: string): void {
     this.verifyInit();
     const graphNode = xpath.select1(
       `/ontology/graph[name="${graphName}"]`,
@@ -507,7 +521,10 @@ class DISOntology {
     setItem(edgeElem, 'predicate', edge.predicate);
   }
 
-  public getRelation(edge: DISEdge, graphName: string): DISEdge | null {
+  public getRelation(
+    edge: DISGetType.Edge,
+    graphName: string,
+  ): DISGetType.Edge | null {
     this.verifyInit();
     const graphNode = xpath.select1(
       `/ontology/graph[name="${graphName}"]`,
@@ -541,7 +558,7 @@ class DISOntology {
     };
   }
 
-  public removeRelation(edge: DISEdge, graphName: string) {
+  public removeRelation(edge: DISSetType.Edge, graphName: string) {
     const relationNode = xpath.select1(
       `/ontology/graph[name="${graphName}"]/edge[from="${edge.from}" and to="${edge.to}" and @relation="${edge.relation}"]`,
       this.doc,
