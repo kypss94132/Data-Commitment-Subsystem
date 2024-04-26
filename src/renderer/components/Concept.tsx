@@ -1,14 +1,15 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import ontology from '../Ontology';
+import Edit from './Edit';
 
 interface ConceptProps {
-  isNew: boolean;
   conceptName: string;
 }
 
-function Concept({ isNew, conceptName }: ConceptProps) {
+function Concept({ conceptName }: ConceptProps) {
   const onto = useContext(ontology);
   const concept = onto.getConcept(conceptName)!;
+  const [isNew, setIsNew] = useState(false);
   const atoms = onto.getAllAtoms().map((a) => a.name);
   const lattice = atoms.map((a) => (
     <div key={a} className="label join-item">
@@ -21,26 +22,25 @@ function Concept({ isNew, conceptName }: ConceptProps) {
     </div>
   ));
 
-  return (
+  const content = (
     <>
-      <div className="btn">Edit</div>
-      <div className="grid gap-4 grid-cols-[minmax(20ch,_auto)_1fr]">
-        <div className="label">Name</div>
-        <input
-          className="input input-bordered"
-          type="text"
-          value={concept.name}
-        />
-        <div className="label">Lattice of Concepts</div>
-        <div className="join join-vertical w-max">{lattice}</div>
-        <div className="label">Description</div>
-        <textarea
-          className="textarea textarea-bordered"
-          value={concept.description!}
-        />
-      </div>
+      <div className="label">Name</div>
+      <input
+        className="input input-bordered"
+        type="text"
+        value={concept.name}
+      />
+      <div className="label">Lattice of Concepts</div>
+      <div className="join join-vertical w-max">{lattice}</div>
+      <div className="label">Description</div>
+      <textarea
+        className="textarea textarea-bordered"
+        value={concept.description!}
+      />
     </>
   );
+
+  return <Edit isNew={isNew} content={content} onAdd={() => {}} />;
 }
 
 export default Concept;

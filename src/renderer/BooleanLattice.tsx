@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState, JSX } from 'react';
 import Atom from './components/Atom';
 import ontology from './Ontology';
 import Concept from './components/Concept';
@@ -29,6 +29,7 @@ function BooleanLattice() {
   const [tag, setTag] = useState('atom');
   // const [items, setItems] = useState([] as string[]);
   const [current, setCurrent] = useState<string | null>(null);
+  const [addNew, setAddNew] = useState(false);
 
   const tab = ['atom', 'concept'].map((t) => (
     <Tab
@@ -42,8 +43,15 @@ function BooleanLattice() {
     />
   ));
 
-  const atomNames = onto.getAllAtoms().map((a) => a.name);
-  const conceptNames = onto.getAllConcepts().map((c) => c.name);
+  const [atomNames, setAtomNames] = useState(
+    onto.getAllAtoms().map((a) => a.name),
+  );
+  const [conceptNames, setConceptNames] = useState(
+    onto.getAllConcepts().map((c) => c.name),
+  );
+
+  // let atomNames = onto.getAllAtoms().map((a) => a.name);
+  // let conceptNames = onto.getAllConcepts().map((c) => c.name);
 
   const items = tag === 'atom' ? atomNames : conceptNames;
 
@@ -59,24 +67,31 @@ function BooleanLattice() {
 
   let edit;
   if (current === null) {
-    edit = <></>;
+    if (addNew) {
+      edit = <Atom atomName={null} />;
+    } else {
+      edit = <></>;
+    }
   } else if (tag === 'atom') {
     edit = <Atom atomName={current} />;
   } else {
-    edit = <Concept isNew={false} conceptName={current} />;
+    edit = <Concept conceptName={current} />;
   }
 
   const addItem = () => {
-    console.log('add');
-    edit = <Atom atomName={null} />;
-    // setCurrent(null);
+    setAddNew(true);
+    setCurrent(null);
+    setAtomNames(onto.getAllAtoms().map((a) => a.name));
+    setConceptNames(onto.getAllConcepts().map((c) => c.name));
   };
 
   function delItem() {
     if (tag === 'atom') {
       onto.removeAtom(current!);
+      setAtomNames(onto.getAllAtoms().map((a) => a.name));
     } else {
       onto.removeConcept(current!);
+      setConceptNames(onto.getAllConcepts().map((c) => c.name));
     }
   }
 
