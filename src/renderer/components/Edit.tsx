@@ -1,14 +1,13 @@
 interface EditProps {
   isNew: boolean;
-  content: any;
-  onAdd: Function;
+  content: JSX.Element;
+  onAdd: any;
 }
 
 function Edit({ isNew, content, onAdd }: EditProps) {
-  console.log(content);
   return (
     <>
-      <div className="btn" onClick={onAdd}>
+      <div className={`btn ${isNew ? 'primary' : 'default'}`} onClick={onAdd}>
         {isNew ? 'Add' : 'Confirm'}
       </div>
       <div className="grid gap-4 grid-cols-[minmax(20ch,_auto)_1fr]">

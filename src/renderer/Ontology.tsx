@@ -5,12 +5,15 @@ const onto = new DISOntology();
 onto.create();
 onto.setAtom({
   name: 'a1',
+  description: 'This is a1',
 });
 onto.setAtom({
   name: 'a2',
+  description: 'This is a2',
 });
 onto.setAtom({
   name: 'a3',
+  description: 'This is a3',
 });
 onto.setConcept({
   name: 'c1',

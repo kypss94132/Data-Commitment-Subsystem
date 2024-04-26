@@ -61,9 +61,23 @@ function BooleanLattice() {
   if (current === null) {
     edit = <></>;
   } else if (tag === 'atom') {
-    edit = <Atom isNew={false} atomName={current} />;
+    edit = <Atom atomName={current} />;
   } else {
     edit = <Concept isNew={false} conceptName={current} />;
+  }
+
+  const addItem = () => {
+    console.log('add');
+    edit = <Atom atomName={null} />;
+    // setCurrent(null);
+  };
+
+  function delItem() {
+    if (tag === 'atom') {
+      onto.removeAtom(current!);
+    } else {
+      onto.removeConcept(current!);
+    }
   }
 
   return (
@@ -79,8 +93,12 @@ function BooleanLattice() {
         </div>
 
         <div className="flex flex-row w-full">
-          <div className="btn btn-success w-1/2">ADD</div>
-          <div className="btn btn-error w-1/2">DELETE</div>
+          <div className="btn btn-success w-1/2" onClick={addItem}>
+            ADD
+          </div>
+          <div className="btn btn-error w-1/2" onClick={delItem}>
+            DELETE
+          </div>
         </div>
       </div>
 

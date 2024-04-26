@@ -1,22 +1,42 @@
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import ontology from '../Ontology';
 import Edit from './Edit';
+import { DISGetType } from '../../main/discore/type';
 
 interface AtomProps {
-  isNew: boolean;
-  atomName: string;
+  atomName: string | null;
 }
 
-function Atom({ isNew, atomName }: AtomProps) {
+function Atom({ atomName }: AtomProps) {
   const onto = useContext(ontology);
-  const atom = onto.getAtom(atomName);
+  const [isNew, setIsNew] = useState(false);
+  const [name, setName] = useState<string>('');
+  const [desc, setDesc] = useState<string>('');
 
-  if (atom === null) {
-    alert('Atom not found');
+  useEffect(() => {
+    if (atomName === null) {
+      console.log('atom Name is null');
+      setIsNew(true);
+      setName('');
+      setDesc('');
+    } else {
+      setIsNew(false);
+      const atom = onto.getAtom(atomName);
+      if (atom === null) {
+        alert('Atom not found');
+      }
+      setName(atom!.name);
+      setDesc(atom!.description ?? '');
+    }
+  }, [atomName, onto]);
+
+  function setAtom() {
+    onto.setAtom({
+      name,
+      description: desc?.length === 0 ? null : desc,
+    });
+    setIsNew(false);
   }
-
-  const [name, setName] = useState(atom!.name);
-  const [desc, setDesc] = useState(atom!.description);
 
   const content = (
     <>
@@ -24,7 +44,8 @@ function Atom({ isNew, atomName }: AtomProps) {
       <input
         className="input input-bordered"
         type="text"
-        readOnly
+        readOnly={!isNew}
+        minLength={1}
         value={name}
         onChange={(e) => {
           setName(e.target.value);
@@ -41,6 +62,6 @@ function Atom({ isNew, atomName }: AtomProps) {
     </>
   );
 
-  return Edit({ isNew, content, onAdd: () => {} });
+  return <Edit isNew={isNew} content={content} onAdd={() => setAtom()} />;
 }
 export default Atom;
