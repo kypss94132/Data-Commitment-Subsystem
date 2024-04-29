@@ -2,6 +2,7 @@ import { useContext, useEffect, useState, JSX } from 'react';
 import Atom from './components/Atom';
 import ontology from './Ontology';
 import Concept from './components/Concept';
+import { DISGetType, DISSetType } from '../main/discore/type';
 
 function Tab({
   tag,
@@ -30,6 +31,25 @@ function BooleanLattice() {
   // const [items, setItems] = useState([] as string[]);
   const [current, setCurrent] = useState<string | null>(null);
   const [addNew, setAddNew] = useState(false);
+  const [atom, setAtom] = useState<DISSetType.Atom>({name: ''});
+  const [concept, setConcept] = useState<DISSetType.Concept | null>(null);
+  const [isNew, setIsNew] = useState(false);
+
+  useEffect(() => {
+    setIsNew(false);
+    if (tag === 'atom') {
+      setAtom(onto.getAtom(current!)!);
+    } else {
+      setConcept(onto.getConcept(current!)!);
+    }
+  }, [current, onto, tag]);
+
+  useEffect(() => {
+    if (current === null) {
+      setAtom({name: ''});
+      setConcept(null);
+    }
+  }, [tag]);
 
   const tab = ['atom', 'concept'].map((t) => (
     <Tab
@@ -59,7 +79,9 @@ function BooleanLattice() {
     <div
       key={i}
       className={`btn ${current === i && 'btn-active'}`}
-      onClick={() => setCurrent(i)}
+      onClick={() => {
+        setCurrent(i);
+      }}
     >
       {i}
     </div>
@@ -73,17 +95,18 @@ function BooleanLattice() {
       edit = <></>;
     }
   } else if (tag === 'atom') {
-    edit = <Atom atomName={current} />;
+    console.log('atom', atom, isNew)
+    edit = <Atom isNew={isNew} atom={atom} setAtom={() => {}} />;
   } else {
     edit = <Concept conceptName={current} />;
   }
 
-  const addItem = () => {
+  function addItem() {
     setAddNew(true);
     setCurrent(null);
     setAtomNames(onto.getAllAtoms().map((a) => a.name));
     setConceptNames(onto.getAllConcepts().map((c) => c.name));
-  };
+  }
 
   function delItem() {
     if (tag === 'atom') {

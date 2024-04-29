@@ -8,7 +8,7 @@ import { DISGetType, DISSetType } from './type';
  *
  * @param elem the parent element
  * @param itemName the name of the child element
- * @param content undefined means do nothing, null means do remove, otherwise do update or add
+ * @param content undefined means do nothing, null or a empty string means do remove, otherwise do update or add
  * @returns
  */
 function setItem(
@@ -21,7 +21,7 @@ function setItem(
   }
 
   const itemNode = xpath.select1(`./${itemName}`, elem) as Node;
-  if (content === null) {
+  if (content === null || content === '') {
     if (itemNode !== undefined) {
       elem.removeChild(itemNode);
     }

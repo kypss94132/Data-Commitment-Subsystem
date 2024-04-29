@@ -1,41 +1,21 @@
-import { useContext, useEffect, useState } from 'react';
-import ontology from '../Ontology';
+import { ChangeEvent } from 'react';
 import Edit from './Edit';
-import { DISGetType } from '../../main/discore/type';
+import { DISSetType } from '../../main/discore/type';
 
 interface AtomProps {
-  atomName: string | null;
+  atom: DISSetType.Atom;
+  setAtom: (atom: DISSetType.Atom) => void;
+  isNew: boolean;
 }
 
-function Atom({ atomName }: AtomProps) {
-  const onto = useContext(ontology);
-  const [isNew, setIsNew] = useState(false);
-  const [name, setName] = useState<string>('');
-  const [desc, setDesc] = useState<string>('');
+function Atom({ atom, setAtom, isNew }: AtomProps) {
+  function handleNameChange(e: ChangeEvent<HTMLInputElement>) {
+    setAtom({ ...atom!, name: e.target.value });
+  }
 
-  useEffect(() => {
-    if (atomName === null) {
-      console.log('atom Name is null');
-      setIsNew(true);
-      setName('');
-      setDesc('');
-    } else {
-      setIsNew(false);
-      const atom = onto.getAtom(atomName);
-      if (atom === null) {
-        alert('Atom not found');
-      }
-      setName(atom!.name);
-      setDesc(atom!.description ?? '');
-    }
-  }, [atomName, onto]);
-
-  function setAtom() {
-    onto.setAtom({
-      name,
-      description: desc?.length === 0 ? null : desc,
-    });
-    setIsNew(false);
+  function handleDescChange(e: ChangeEvent<HTMLTextAreaElement>) {
+    const desc: string = e.target.value;
+    setAtom({ ...atom!, description: desc });
   }
 
   const content = (
@@ -46,18 +26,14 @@ function Atom({ atomName }: AtomProps) {
         type="text"
         readOnly={!isNew}
         minLength={1}
-        value={name}
-        onChange={(e) => {
-          setName(e.target.value);
-        }}
+        value={atom?.name ?? ''}
+        onChange={handleNameChange}
       />
       <div className="label">Description</div>
       <textarea
         className="textarea textarea-bordered"
-        value={desc}
-        onChange={(e) => {
-          setDesc(e.target.value);
-        }}
+        value={atom?.description ?? ''}
+        onChange={handleDescChange}
       />
     </>
   );
