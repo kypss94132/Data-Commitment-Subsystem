@@ -4,18 +4,20 @@ import { DISSetType } from '../../main/discore/type';
 
 interface AtomProps {
   atom: DISSetType.Atom;
-  setAtom: (atom: DISSetType.Atom) => void;
   isNew: boolean;
+  setContent: (atom: DISSetType.Atom) => void;
+  addAtom: () => void;
+  updateAtom: () => void;
 }
 
-function Atom({ atom, setAtom, isNew }: AtomProps) {
+function Atom({ atom, setContent, isNew, addAtom, updateAtom }: AtomProps) {
   function handleNameChange(e: ChangeEvent<HTMLInputElement>) {
-    setAtom({ ...atom!, name: e.target.value });
+    setContent({ ...atom, name: e.target.value });
   }
 
   function handleDescChange(e: ChangeEvent<HTMLTextAreaElement>) {
     const desc: string = e.target.value;
-    setAtom({ ...atom!, description: desc });
+    setContent({ ...atom, description: desc });
   }
 
   const content = (
@@ -38,6 +40,13 @@ function Atom({ atom, setAtom, isNew }: AtomProps) {
     </>
   );
 
-  return <Edit isNew={isNew} content={content} onAdd={() => setAtom()} />;
+  return (
+    <Edit
+      isNew={isNew}
+      content={content}
+      onCreate={addAtom}
+      onUpdate={updateAtom}
+    />
+  );
 }
 export default Atom;

@@ -4,6 +4,12 @@ import ontology from './Ontology';
 import Concept from './components/Concept';
 import { DISGetType, DISSetType } from '../main/discore/type';
 
+enum Status {
+  BLANK,
+  ADD,
+  EDIT,
+}
+
 function Tab({
   tag,
   active,
@@ -30,26 +36,28 @@ function BooleanLattice() {
   const [tag, setTag] = useState('atom');
   // const [items, setItems] = useState([] as string[]);
   const [current, setCurrent] = useState<string | null>(null);
-  const [addNew, setAddNew] = useState(false);
-  const [atom, setAtom] = useState<DISSetType.Atom>({name: ''});
-  const [concept, setConcept] = useState<DISSetType.Concept | null>(null);
-  const [isNew, setIsNew] = useState(false);
+  const [atom, setAtom] = useState<DISSetType.Atom>({ name: '' });
+  const [concept, setConcept] = useState<DISSetType.Concept>({
+    name: '',
+    latticeOfConcepts: [],
+  });
+  const [status, setStatus] = useState(Status.BLANK);
 
   useEffect(() => {
-    setIsNew(false);
-    if (tag === 'atom') {
-      setAtom(onto.getAtom(current!)!);
-    } else {
-      setConcept(onto.getConcept(current!)!);
+    if (status === Status.EDIT) {
+      if (tag === 'atom') {
+        setAtom(onto.getAtom(current!)!);
+      } else {
+        setConcept(onto.getConcept(current!)!);
+      }
+    } else if (status === Status.ADD) {
+      if (tag === 'atom') {
+        setAtom({ name: '' });
+      } else {
+        setConcept({ name: '', latticeOfConcepts: [] });
+      }
     }
-  }, [current, onto, tag]);
-
-  useEffect(() => {
-    if (current === null) {
-      setAtom({name: ''});
-      setConcept(null);
-    }
-  }, [tag]);
+  }, [current, onto, status, tag]);
 
   const tab = ['atom', 'concept'].map((t) => (
     <Tab
@@ -59,6 +67,7 @@ function BooleanLattice() {
       onClick={() => {
         setTag(t);
         setCurrent(null);
+        setStatus(Status.BLANK);
       }}
     />
   ));
@@ -81,6 +90,7 @@ function BooleanLattice() {
       className={`btn ${current === i && 'btn-active'}`}
       onClick={() => {
         setCurrent(i);
+        setStatus(Status.EDIT);
       }}
     >
       {i}
@@ -88,21 +98,53 @@ function BooleanLattice() {
   ));
 
   let edit;
-  if (current === null) {
-    if (addNew) {
-      edit = <Atom atomName={null} />;
-    } else {
-      edit = <></>;
-    }
+  if (status === Status.BLANK) {
+    edit = <></>;
   } else if (tag === 'atom') {
-    console.log('atom', atom, isNew)
-    edit = <Atom isNew={isNew} atom={atom} setAtom={() => {}} />;
+    edit = (
+      <Atom
+        isNew={status === Status.ADD}
+        atom={atom}
+        setContent={setAtom}
+        addAtom={() => {
+          if (onto.hasAtom(atom.name)) {
+            alert('Atom already exists');
+            return;
+          }
+          onto.setAtom(atom);
+          setStatus(Status.BLANK);
+          setAtomNames(onto.getAllAtoms().map((a) => a.name));
+        }}
+        updateAtom={() => {
+          onto.setAtom(atom);
+        }}
+      />
+    );
   } else {
-    edit = <Concept conceptName={current} />;
+    edit = (
+      <Concept
+        isNew={status === Status.ADD}
+        concept={concept}
+        atoms={atomNames}
+        setContent={setConcept}
+        addConcept={() => {
+          if (onto.getConcept(concept.name) !== null) {
+            alert('Concept already exists');
+            return;
+          }
+          onto.setConcept(concept);
+          setStatus(Status.BLANK);
+          setConceptNames(onto.getAllConcepts().map((c) => c.name));
+        }}
+        updateConcept={() => {
+          onto.setConcept(concept);
+        }}
+      />
+    );
   }
 
   function addItem() {
-    setAddNew(true);
+    setStatus(Status.ADD);
     setCurrent(null);
     setAtomNames(onto.getAllAtoms().map((a) => a.name));
     setConceptNames(onto.getAllConcepts().map((c) => c.name));
@@ -116,6 +158,8 @@ function BooleanLattice() {
       onto.removeConcept(current!);
       setConceptNames(onto.getAllConcepts().map((c) => c.name));
     }
+    setCurrent(null);
+    setStatus(Status.BLANK);
   }
 
   return (
