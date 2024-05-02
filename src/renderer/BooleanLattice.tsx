@@ -3,6 +3,7 @@ import Atom from './components/Atom';
 import ontology from './Ontology';
 import Concept from './components/Concept';
 import { DISGetType, DISSetType } from '../main/discore/type';
+import BLView from './components/BLView';
 
 enum Status {
   BLANK,
@@ -188,7 +189,7 @@ function BooleanLattice() {
       <div className="flex flex-col flex-grow">
         {/* upper view */}
         <div className="h-3/5">
-          <h1>up</h1>
+          <BLView />
         </div>
 
         {/* lower edit */}
