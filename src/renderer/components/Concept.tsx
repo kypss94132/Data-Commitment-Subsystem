@@ -1,5 +1,4 @@
-import { ChangeEvent, useContext, useState } from 'react';
-import ontology from '../Ontology';
+import { ChangeEvent } from 'react';
 import Edit from './Edit';
 import { DISSetType } from '../../main/discore/type';
 
@@ -25,7 +24,8 @@ function Concept({
   }
 
   function handleLatticeChange(e: ChangeEvent<HTMLInputElement>) {
-    const name = e.target.value;
+    console.log(e);
+    const { name } = e.target;
     if (concept.latticeOfConcepts.includes(name)) {
       setContent({
         ...concept,
@@ -37,6 +37,7 @@ function Concept({
         latticeOfConcepts: [...concept.latticeOfConcepts, name],
       });
     }
+    console.log(concept);
   }
 
   function handleDescChange(e: ChangeEvent<HTMLTextAreaElement>) {
@@ -47,6 +48,7 @@ function Concept({
   const lattice = atoms.map((a) => (
     <div key={a} className="label join-item">
       <input
+        name={a}
         type="checkbox"
         checked={concept.latticeOfConcepts.includes(a)}
         className="checkbox checkbox-primary checkbox-sm mr-2"
@@ -62,6 +64,7 @@ function Concept({
       <input
         className="input input-bordered"
         type="text"
+        readOnly={!isNew}
         value={concept.name}
         onChange={handleNameChange}
       />
@@ -70,7 +73,7 @@ function Concept({
       <div className="label">Description</div>
       <textarea
         className="textarea textarea-bordered"
-        value={concept.description!}
+        value={concept.description ?? ''}
         onChange={handleDescChange}
       />
     </>
@@ -80,8 +83,8 @@ function Concept({
     <Edit
       isNew={isNew}
       content={content}
-      onCreate={() => {}}
-      onUpdate={() => {}}
+      onCreate={addConcept}
+      onUpdate={updateConcept}
     />
   );
 }
