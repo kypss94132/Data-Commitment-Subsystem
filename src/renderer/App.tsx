@@ -11,7 +11,7 @@ import 'tailwindcss/tailwind.css';
 import BooleanLattice from './BooleanLattice';
 import RootedGraph from './RootedGraph';
 
-import ontology from './Ontology';
+import OntologyContext from './Ontology';
 
 function Hello() {
   return (
@@ -52,6 +52,7 @@ function Hello() {
 }
 
 function Navagation() {
+  const [onto, setOnto] = useState(useContext(OntologyContext));
   const [active, setActive] = useState('home');
   const items = [
     {
@@ -85,7 +86,9 @@ function Navagation() {
     <div className="w-dvw h-dvh flex flex-col">
       <div className="navbar border-y">{links}</div>
       <div className="content flex-grow">
-        <Outlet />
+        <OntologyContext.Provider value={onto}>
+          <Outlet />
+        </OntologyContext.Provider>
       </div>
     </div>
   );
@@ -113,7 +116,7 @@ const router = createMemoryRouter([
 ]);
 
 export default function App() {
-  const onto = useContext(ontology);
+  const onto = useContext(OntologyContext);
 
   if (!onto.isInitialized()) {
     return (

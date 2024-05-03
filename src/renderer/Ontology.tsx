@@ -1,7 +1,7 @@
-import { createContext } from 'react';
+import { createContext, useState } from 'react';
 import DISOntology from '../main/discore/ontology';
 
-const onto = new DISOntology();
+const [onto, setOnto] = useState(new DISOntology());
 onto.create();
 onto.setAtom({
   name: 'a1',
@@ -15,10 +15,14 @@ onto.setAtom({
   name: 'a3',
   description: 'This is a3',
 });
+onto.setAtom({
+  name: 'a4',
+  description: 'This is a4',
+});
 onto.setConcept({
   name: 'c1',
   latticeOfConcepts: ['a1', 'a2'],
 });
-const ontology = createContext(onto);
+const OntologyContext = createContext(onto);
 
-export default ontology;
+export default OntologyContext;

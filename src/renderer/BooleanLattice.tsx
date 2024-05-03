@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState, JSX } from 'react';
 import Atom from './components/Atom';
-import ontology from './Ontology';
+import OntologyContext from './Ontology';
 import Concept from './components/Concept';
 import { DISGetType, DISSetType } from '../main/discore/type';
 import BLView from './components/BLView';
@@ -32,7 +32,7 @@ function Tab({
 }
 
 function BooleanLattice() {
-  const onto = useContext(ontology);
+  const onto = useContext(OntologyContext);
 
   const [tag, setTag] = useState('atom');
   // const [items, setItems] = useState([] as string[]);

@@ -1,9 +1,9 @@
-import ontology from './Ontology';
+import OntologyContext from './Ontology';
 
 function RootedGraph() {
   return (
     <div>
-      
+
     </div>
   );
 }

@@ -9,7 +9,7 @@ import {
 } from 'react';
 import { Combination, PowerSet, combination } from 'js-combinatorics';
 import { DISGetType } from '../../main/discore/type';
-import ontology from '../Ontology';
+import OntologyContext from '../Ontology';
 
 interface Props {
   concepts: DISGetType.Concept[];
@@ -56,7 +56,7 @@ function generateGraph(atoms: string[]) {
 
   let lowerStart = 1;
   for (let level = 2; level < len; level += 1) {
-    const upperStart = lowerStart + len;
+    const upperStart = lowerStart + Number(combination(len, level - 1));
     for (let i = 0; i < combination(len, level); i += 1) {
       const upperIdx = upperStart + i;
       for (let j = 0; j < combination(len, level - 1); j += 1) {
@@ -84,7 +84,7 @@ function generateGraph(atoms: string[]) {
 }
 
 function BLView() {
-  const onto = useContext(ontology);
+  const onto = useContext(OntologyContext);
   // const atoms = onto.getAllAtoms().map((a) => a.name);
   const [atoms, setAtoms] = useState<string[]>([]);
 
@@ -95,17 +95,6 @@ function BLView() {
       setAtoms(onto.getAllAtoms().map((a) => a.name));
     }
   }, [onto, atoms]);
-
-  // const atoms = onto.getAllAtoms().map((a) => a.name);
-  // const concepts = useMemo(
-  //   () => new Set(onto.getAllConcepts().map((c) => c.latticeOfConcepts)),
-  //   [onto],
-  // );
-  // const concepts: Set<string[]> = new Set(
-  //   onto.getAllConcepts().map((c) => c.latticeOfConcepts),
-  // );
-
-  // const generateGraph = useCallback(() => generateGraph(atoms), [atoms]);
 
   const graph = useMemo(() => {
     const { nodes, edges } = generateGraph(atoms);
