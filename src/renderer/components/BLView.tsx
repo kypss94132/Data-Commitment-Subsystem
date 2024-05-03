@@ -1,5 +1,12 @@
-import Graph, { Option } from 'react-graph-vis';
-import { useContext } from 'react';
+import Graph, { Options } from 'react-graph-vis';
+import {
+  memo,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { Combination, PowerSet, combination } from 'js-combinatorics';
 import { DISGetType } from '../../main/discore/type';
 import ontology from '../Ontology';
@@ -19,19 +26,14 @@ function isSuperset<T>(set: Set<T>, subset: Set<T>) {
   return true;
 }
 
-function BLView() {
-  const onto = useContext(ontology);
-  const atoms = onto.getAllAtoms().map((a) => a.name);
-  const concepts: Set<string[]> = new Set(
-    onto.getAllConcepts().map((c) => c.latticeOfConcepts),
-  );
+function arrayEqual<T>(a: T[], b: T[]): boolean {
+  return a.length === b.length && a.every((v, i) => v === b[i]);
+}
+
+function generateGraph(atoms: string[]) {
   const len = atoms.length;
   const blItems: Set<string>[] = [];
-  for (let i = 0; i < blItems.length; i += 1) {
-    console.log(blItems.at(i));
-  }
-  // const nodes = [];
-  const edges = [];
+  const edges: any[] = [];
 
   blItems.push(new Set());
 
@@ -67,10 +69,6 @@ function BLView() {
     lowerStart = upperStart;
   }
 
-  //   const comLower = new Combination(atoms, i - 1);
-  //   const combLower = [...comLower];
-  // }
-
   const nodes = blItems.map((item, idx) => {
     return {
       id: idx,
@@ -79,12 +77,42 @@ function BLView() {
     };
   });
 
-  const graph = {
+  return {
     nodes,
     edges,
   };
+}
 
-  const options: Option = {
+function BLView() {
+  const onto = useContext(ontology);
+  // const atoms = onto.getAllAtoms().map((a) => a.name);
+  const [atoms, setAtoms] = useState<string[]>([]);
+
+  useEffect(() => {
+    const updatedAtoms = onto.getAllAtoms().map((a) => a.name);
+    console.log(atoms, updatedAtoms);
+    if (!arrayEqual(atoms, updatedAtoms)) {
+      setAtoms(onto.getAllAtoms().map((a) => a.name));
+    }
+  }, [onto, atoms]);
+
+  // const atoms = onto.getAllAtoms().map((a) => a.name);
+  // const concepts = useMemo(
+  //   () => new Set(onto.getAllConcepts().map((c) => c.latticeOfConcepts)),
+  //   [onto],
+  // );
+  // const concepts: Set<string[]> = new Set(
+  //   onto.getAllConcepts().map((c) => c.latticeOfConcepts),
+  // );
+
+  // const generateGraph = useCallback(() => generateGraph(atoms), [atoms]);
+
+  const graph = useMemo(() => {
+    const { nodes, edges } = generateGraph(atoms);
+    return { nodes, edges };
+  }, [atoms]);
+
+  const [options, setOptions] = useState<Options>({
     autoResize: true,
     layout: {
       hierarchical: {
@@ -103,7 +131,7 @@ function BLView() {
     interaction: {
       dragNodes: false,
     },
-  };
+  });
 
   const events = {
     select(event) {
@@ -115,10 +143,10 @@ function BLView() {
     <Graph
       graph={graph}
       options={options}
-      events={events}
-      getNetwork={(network) => {
-        //  if you want access to vis.js network api you can set the state in a parent component using this property
-      }}
+      // events={events}
+      // getNetwork={(network) => {
+      //   //  if you want access to vis.js network api you can set the state in a parent component using this property
+      // }}
     />
   );
 }

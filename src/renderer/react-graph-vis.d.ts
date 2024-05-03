@@ -54,7 +54,7 @@ declare module 'react-graph-vis' {
     hierarchical?: boolean | Hierarchical;
   };
 
-  export type Option = {
+  export type Options = {
     autoResize?: boolean;
     width?: string;
     height?: string;
@@ -73,7 +73,7 @@ declare module 'react-graph-vis' {
 
   export type GraphProps = {
     graph?: { nodes: any[]; edges: any[] };
-    options?: Option;
+    options?: Options;
     events?: any;
     getNetwork?: (network: any) => void;
   };
