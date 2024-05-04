@@ -171,7 +171,7 @@ function BooleanLattice() {
           {tab}
         </div>
 
-        <div className="flex-grow w-full">
+        <div className="grow w-full">
           <div className="join join-vertical w-full">{list}</div>
         </div>
 
