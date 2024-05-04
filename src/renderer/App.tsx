@@ -11,7 +11,7 @@ import 'tailwindcss/tailwind.css';
 import BooleanLattice from './BooleanLattice';
 import RootedGraph from './RootedGraph';
 
-import OntologyContext from './Ontology';
+import { OntologyContext, OntologyProvider } from './Ontology';
 
 function Hello() {
   return (
@@ -126,5 +126,9 @@ export default function App() {
     );
   }
 
-  return <RouterProvider router={router} />;
+  return (
+    <OntologyProvider>
+      <RouterProvider router={router} />
+    </OntologyProvider>
+  );
 }

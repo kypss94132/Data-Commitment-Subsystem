@@ -569,6 +569,35 @@ class DISOntology {
     }
   }
 
+  public getAllRelations(graphName: string): DISGetType.Edge[] {
+    this.verifyInit();
+    const graphNode = xpath.select1(
+      `/ontology/graph[name="${graphName}"]`,
+      this.doc,
+    ) as Node;
+
+    if (graphNode === undefined) {
+      return [];
+    }
+
+    const edgeNodes = xpath.select('./edge', graphNode) as Array<Node>;
+
+    return edgeNodes.map((edgeNode) => {
+      const edgeElem = node2elem(edgeNode);
+      const edgeFrom = (xpath.select1('./from', edgeNode) as Node).textContent!;
+      const edgeTo = (xpath.select1('./to', edgeNode) as Node).textContent!;
+      const edgePred = (xpath.select1('./predicate', edgeNode) as Node)
+        ?.textContent!;
+
+      return {
+        from: edgeFrom,
+        to: edgeTo,
+        predicate: edgePred,
+        relation: edgeElem.getAttribute('relation')!,
+      };
+    });
+  }
+
   // private getAllAtoms(): DISAtom[] {}
 }
 

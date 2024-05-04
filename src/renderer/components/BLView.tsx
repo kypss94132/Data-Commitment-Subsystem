@@ -7,9 +7,9 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { Combination, PowerSet, combination } from 'js-combinatorics';
+import { Combination, combination } from 'js-combinatorics';
 import { DISGetType } from '../../main/discore/type';
-import OntologyContext from '../Ontology';
+import { OntologyContext } from '../Ontology';
 
 interface Props {
   concepts: DISGetType.Concept[];
@@ -85,16 +85,15 @@ function generateGraph(atoms: string[]) {
 
 function BLView() {
   const onto = useContext(OntologyContext);
-  // const atoms = onto.getAllAtoms().map((a) => a.name);
   const [atoms, setAtoms] = useState<string[]>([]);
 
   useEffect(() => {
-    const updatedAtoms = onto.getAllAtoms().map((a) => a.name);
-    console.log(atoms, updatedAtoms);
-    if (!arrayEqual(atoms, updatedAtoms)) {
-      setAtoms(onto.getAllAtoms().map((a) => a.name));
-    }
-  }, [onto, atoms]);
+    // const updatedAtoms = onto.getAllAtoms().map((a) => a.name);
+    // console.log(atoms, updatedAtoms);
+    // if (!arrayEqual(atoms, updatedAtoms)) {
+    // }
+    setAtoms(onto.getAllAtoms().map((a) => a.name));
+  }, [onto]);
 
   const graph = useMemo(() => {
     const { nodes, edges } = generateGraph(atoms);

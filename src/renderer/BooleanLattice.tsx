@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState, JSX } from 'react';
 import Atom from './components/Atom';
-import OntologyContext from './Ontology';
+import { OntologyContext, OntologyDispatchContext } from './Ontology';
 import Concept from './components/Concept';
 import { DISGetType, DISSetType } from '../main/discore/type';
 import BLView from './components/BLView';
@@ -33,6 +33,7 @@ function Tab({
 
 function BooleanLattice() {
   const onto = useContext(OntologyContext);
+  const dispatch = useContext(OntologyDispatchContext);
 
   const [tag, setTag] = useState('atom');
   // const [items, setItems] = useState([] as string[]);
@@ -80,9 +81,6 @@ function BooleanLattice() {
     onto.getAllConcepts().map((c) => c.name),
   );
 
-  // let atomNames = onto.getAllAtoms().map((a) => a.name);
-  // let conceptNames = onto.getAllConcepts().map((c) => c.name);
-
   const items = tag === 'atom' ? atomNames : conceptNames;
 
   const list = items.map((i) => (
@@ -115,6 +113,7 @@ function BooleanLattice() {
           onto.setAtom(atom);
           setStatus(Status.BLANK);
           setAtomNames(onto.getAllAtoms().map((a) => a.name));
+          dispatch({ type: 'rerender' });
         }}
         updateAtom={() => {
           onto.setAtom(atom);
@@ -136,6 +135,7 @@ function BooleanLattice() {
           onto.setConcept(concept);
           setStatus(Status.BLANK);
           setConceptNames(onto.getAllConcepts().map((c) => c.name));
+          dispatch({ type: 'rerender' });
         }}
         updateConcept={() => {
           onto.setConcept(concept);

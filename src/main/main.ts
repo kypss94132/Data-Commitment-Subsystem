@@ -12,6 +12,9 @@ import path from 'path';
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
+import installExtension, {
+  REACT_DEVELOPER_TOOLS,
+} from 'electron-devtools-assembler';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
@@ -58,7 +61,10 @@ const installExtensions = async () => {
 
 const createWindow = async () => {
   if (isDebug) {
-    await installExtensions();
+    // await installExtensions();
+    await installExtension(REACT_DEVELOPER_TOOLS)
+      .then((name) => console.log(`Added Extension:  ${name}`))
+      .catch((err) => console.log('An error occurred: ', err));
   }
 
   const RESOURCES_PATH = app.isPackaged
