@@ -385,6 +385,21 @@ class DISOntology {
     }
   }
 
+  public getAllVirtualConcepts(): DISGetType.VirtualConcept[] {
+    this.verifyInit();
+
+    const virtualConceptNodes = xpath.select(
+      '/ontology/virtualConcept',
+      this.doc,
+    ) as Array<Node>;
+
+    return virtualConceptNodes.map((node) => {
+      return {
+        name: node.textContent!,
+      };
+    });
+  }
+
   /**
    * Set a rooted graph in the ontology.
    * If the graph does not exist, it will be created. But the root must exist.

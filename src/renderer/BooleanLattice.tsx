@@ -4,31 +4,13 @@ import { OntologyContext, OntologyDispatchContext } from './Ontology';
 import Concept from './components/Concept';
 import { DISGetType, DISSetType } from '../main/discore/type';
 import BLView from './components/BLView';
+import TabList from './components/TabList';
+import Tab from './components/Tab';
 
 enum Status {
   BLANK,
   ADD,
   EDIT,
-}
-
-function Tab({
-  tag,
-  active,
-  onClick,
-}: {
-  tag: string;
-  active: boolean;
-  onClick: any;
-}) {
-  return (
-    <div
-      role="tab"
-      className={`tab ${active && 'tab-active'}`}
-      onClick={onClick}
-    >
-      {tag.charAt(0).toUpperCase() + tag.slice(1)}
-    </div>
-  );
 }
 
 function BooleanLattice() {
@@ -167,9 +149,18 @@ function BooleanLattice() {
     <div className="flex flex-row h-full">
       {/* sidebar */}
       <div className="min-w-60 flex flex-col border">
-        <div role="tablist" className="tabs tabs-bordered">
+        {/* <div role="tablist" className="tabs tabs-bordered">
           {tab}
-        </div>
+        </div> */}
+        <TabList
+          tabs={['atom', 'concept']}
+          activeTab={tag}
+          onTabClick={(tab) => {
+            setTag(tab);
+            setCurrent(null);
+            setStatus(Status.BLANK);
+          }}
+        />
 
         <div className="grow w-full">
           <div className="join join-vertical w-full">{list}</div>
