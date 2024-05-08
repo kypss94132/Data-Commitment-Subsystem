@@ -1,6 +1,8 @@
 import { useContext, useState, useId } from 'react';
 import { OntologyContext, OntologyDispatchContext } from './Ontology';
 import TabList from './components/TabList';
+import { RuntimeGlobals } from 'webpack';
+import RGView from './components/RGView';
 
 enum Status {
   BLANK,
@@ -101,7 +103,6 @@ function RootedGraph() {
               setTag(tab);
               setCurrent(null);
               setStatus(Status.BLANK);
-              dispatch({ type: 'rerender' });
             }}
           />
           <div className="grow">
@@ -172,7 +173,9 @@ function RootedGraph() {
         </div>
       </div>
 
-      <div className="flex justify-center items-center w-1/2">right</div>
+      <div className="flex justify-center items-center w-1/2">
+        <RGView />
+      </div>
     </div>
   );
 }

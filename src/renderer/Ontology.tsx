@@ -1,5 +1,7 @@
-import { Dispatch, ReactNode, createContext, useReducer } from 'react';
+import { Dispatch, ReactNode, createContext, useContext, useReducer, useState } from 'react';
 import DISOntology from '../main/discore/ontology';
+import { v4 as uuidv4 } from 'uuid';
+
 
 const ontology = new DISOntology();
 ontology.create();
@@ -72,29 +74,49 @@ interface Action {
   type: 'rerender';
 }
 
-function ontologyReducer(onto: DISOntology, action: Action) {
+interface Signal {
+  signal: string;
+}
+
+function ontologyRenderReducer(render: string, action: Action) {
   switch (action.type) {
     case 'rerender':
       console.log('rerender');
-      return {};
+      return uuidv4();
     default:
-      console.error('Unknown action type');
+      throw Error('Unknown action type');
   }
 }
 
 export const OntologyContext = createContext(ontology);
+export const OntologyRenderContext = createContext(uuidv4());
 export const OntologyDispatchContext = createContext<Dispatch<Action>>(
   {} as Dispatch<Action>,
 );
 
+export function useOntologyRenderSignal() {
+  return useContext(OntologyRenderContext);
+}
+
+export function useOntology() {
+  return useContext(OntologyContext);
+}
+
+export function useOntologyRenderDispatch() {
+  return useContext(OntologyDispatchContext);
+}
+
 export function OntologyProvider({ children }: Props) {
-  const [onto, dispatch] = useReducer(ontologyReducer, ontology);
+  const [onto, setOnto] = useState(ontology);
+  const [rerender, dispatch] = useReducer(ontologyRenderReducer, uuidv4());
 
   return (
     <OntologyContext.Provider value={onto}>
-      <OntologyDispatchContext.Provider value={dispatch}>
-        {children}
-      </OntologyDispatchContext.Provider>
+      <OntologyRenderContext.Provider value={rerender}>
+        <OntologyDispatchContext.Provider value={dispatch}>
+          {children}
+        </OntologyDispatchContext.Provider>
+      </OntologyRenderContext.Provider>
     </OntologyContext.Provider>
   );
 }
