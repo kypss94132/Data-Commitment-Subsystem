@@ -86,9 +86,7 @@ function Navagation() {
     <div className="w-dvw h-dvh flex flex-col">
       <div className="navbar border-y">{links}</div>
       <div className="content flex-grow">
-        <OntologyContext.Provider value={onto}>
-          <Outlet />
-        </OntologyContext.Provider>
+        <Outlet />
       </div>
     </div>
   );
