@@ -1,7 +1,13 @@
-import { Dispatch, ReactNode, createContext, useContext, useReducer, useState } from 'react';
-import DISOntology from '../main/discore/ontology';
+import {
+  Dispatch,
+  ReactNode,
+  createContext,
+  useContext,
+  useReducer,
+  useState,
+} from 'react';
 import { v4 as uuidv4 } from 'uuid';
-
+import DISOntology from '../main/discore/ontology';
 
 const ontology = new DISOntology();
 ontology.create();
@@ -89,13 +95,13 @@ function ontologyRenderReducer(render: string, action: Action) {
 }
 
 export const OntologyContext = createContext(ontology);
-export const OntologyRenderContext = createContext(uuidv4());
-export const OntologyDispatchContext = createContext<Dispatch<Action>>(
+export const OntologyRenderSignalContext = createContext(uuidv4());
+export const OntologyRenderDispatchContext = createContext<Dispatch<Action>>(
   {} as Dispatch<Action>,
 );
 
 export function useOntologyRenderSignal() {
-  return useContext(OntologyRenderContext);
+  return useContext(OntologyRenderSignalContext);
 }
 
 export function useOntology() {
@@ -103,7 +109,7 @@ export function useOntology() {
 }
 
 export function useOntologyRenderDispatch() {
-  return useContext(OntologyDispatchContext);
+  return useContext(OntologyRenderDispatchContext);
 }
 
 export function OntologyProvider({ children }: Props) {
@@ -112,11 +118,11 @@ export function OntologyProvider({ children }: Props) {
 
   return (
     <OntologyContext.Provider value={onto}>
-      <OntologyRenderContext.Provider value={rerender}>
-        <OntologyDispatchContext.Provider value={dispatch}>
+      <OntologyRenderSignalContext.Provider value={rerender}>
+        <OntologyRenderDispatchContext.Provider value={dispatch}>
           {children}
-        </OntologyDispatchContext.Provider>
-      </OntologyRenderContext.Provider>
+        </OntologyRenderDispatchContext.Provider>
+      </OntologyRenderSignalContext.Provider>
     </OntologyContext.Provider>
   );
 }

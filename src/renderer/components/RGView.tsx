@@ -1,14 +1,14 @@
 import Graph, { Options } from 'react-graph-vis';
 import { useContext, useEffect, useState } from 'react';
 import { DISGetType } from '../../main/discore/type';
-import { OntologyContext, useOntology, useOntologyRenderDispatch, useOntologyRenderSignal } from '../Ontology';
+import {
+  OntologyContext,
+  useOntology,
+  useOntologyRenderDispatch,
+  useOntologyRenderSignal,
+} from '../Ontology';
 
-interface Props {
-  concepts: DISGetType.Concept[];
-  atoms: DISGetType.Atom[];
-}
-
-function generateGraph(relations: DISGetType.Edge[]) {
+function generateGraph(relations: DISGetType.Edge[], root: string) {
   const nodeSet = new Set<string>();
 
   relations.forEach((edge) => {
@@ -21,6 +21,11 @@ function generateGraph(relations: DISGetType.Edge[]) {
     label: node,
   }));
 
+  nodes.push({
+    id: root,
+    label: root,
+  });
+
   const edges = relations.map((edge) => ({
     from: edge.from,
     to: edge.to,
@@ -32,24 +37,29 @@ function generateGraph(relations: DISGetType.Edge[]) {
   };
 }
 
-function RGView() {
+interface Props {
+  graphName: string;
+}
+
+function RGView({ graphName }: Props) {
   const onto = useOntology();
   const renderSignal = useOntologyRenderSignal();
-  const renderDispatch = useOntologyRenderDispatch();
   const [relations, setRelations] = useState<DISGetType.Edge[]>(
-    onto.getAllRelations('r1'),
+    onto.getAllRelations(graphName),
   );
+  const [rg, setRg] = useState(onto.getRootedGraph(graphName));
 
   console.log(onto);
   useEffect(() => {
     console.log(onto);
-    setRelations(onto.getAllRelations('r1'));
-  }, [onto, renderSignal]);
+    setRelations(onto.getAllRelations(graphName));
+    setRg(onto.getRootedGraph(graphName));
+  }, [onto, renderSignal, graphName]);
 
-  const graph = generateGraph(relations);
+  const graph = generateGraph(relations, rg?.rootedAt!);
 
   const [options, setOptions] = useState<Options>({
-    autoResize: true,
+    // autoResize: true,
     // layout: {
     //   hierarchical: {
     //     direction: 'DU',

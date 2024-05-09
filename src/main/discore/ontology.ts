@@ -467,6 +467,27 @@ class DISOntology {
     };
   }
 
+  public getAllRootedGraphs(): DISGetType.Graph[] {
+    this.verifyInit();
+
+    const graphNodes = xpath.select('/ontology/graph', this.doc) as Array<Node>;
+
+    return graphNodes.map((graphNode) => {
+      const graphName = (xpath.select1('./name', graphNode) as Node)
+        .textContent!;
+      const graphDesc = (xpath.select1('./description', graphNode) as Node)
+        ?.textContent!;
+      const graphRoot = (xpath.select1('./rootedAt', graphNode) as Node)
+        ?.textContent!;
+
+      return {
+        name: graphName,
+        description: graphDesc,
+        rootedAt: graphRoot,
+      };
+    });
+  }
+
   public removeRootedGraph(name: string): void {
     this.verifyInit();
 
