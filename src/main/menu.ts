@@ -200,18 +200,22 @@ export default class MenuBuilder {
           {
             label: '&New',
             accelerator: 'Ctrl+N',
+            click: () => this.mainWindow.webContents.send('file', 'new'),
           },
           {
             label: '&Open',
             accelerator: 'Ctrl+O',
+            click: () => this.mainWindow.webContents.send('file', 1),
           },
           {
             label: '&Save',
             accelerator: 'Ctrl+S',
+            click: () => this.mainWindow.webContents.send('file', 1);
           },
           {
             label: '&Save as',
             accelerator: 'Ctrl+Shift+S',
+            click: () => this.mainWindow.webContents.send('file', 1);
           },
           {
             label: '&Close',

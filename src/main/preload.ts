@@ -22,6 +22,10 @@ const electronHandler = {
       ipcRenderer.once(channel, (_event, ...args) => func(...args));
     },
   },
+  file: {
+    new: (callback) =>
+      ipcRenderer.on('update-counter', (_event, value) => callback(value)),
+  },
 };
 
 contextBridge.exposeInMainWorld('electron', electronHandler);
