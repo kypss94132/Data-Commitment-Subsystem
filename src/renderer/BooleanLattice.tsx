@@ -1,6 +1,6 @@
-import { useContext, useEffect, useState, JSX } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import Atom from './components/Atom';
-import { OntologyContext, OntologyRenderDispatchContext } from './Ontology';
+import { OntologyContext, RenderDispatchContext } from './Ontology';
 import Concept from './components/Concept';
 import { DISGetType, DISSetType } from '../main/discore/type';
 import BLView from './components/BLView';
@@ -15,7 +15,7 @@ enum Status {
 
 function BooleanLattice() {
   const onto = useContext(OntologyContext);
-  const dispatch = useContext(OntologyRenderDispatchContext);
+  const dispatch = useContext(RenderDispatchContext);
 
   const [tag, setTag] = useState('atom');
   // const [items, setItems] = useState([] as string[]);

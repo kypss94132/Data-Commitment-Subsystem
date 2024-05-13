@@ -4,7 +4,6 @@ import {
   createContext,
   useContext,
   useReducer,
-  useState,
 } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import DISOntology from '../main/discore/ontology';
@@ -76,15 +75,38 @@ interface Props {
   children: ReactNode;
 }
 
-interface Action {
+interface RenderAction {
   type: 'rerender';
+}
+
+interface OntologyAction {
+  type: 'new' | 'open' | 'save' | 'saveAs';
 }
 
 interface Signal {
   signal: string;
 }
 
-function ontologyRenderReducer(render: string, action: Action) {
+function ontologyReducer(onto: DISOntology, action: OntologyAction) {
+  console.log('Ontology action:', action);
+  switch (action.type) {
+    case 'new':
+      onto.create();
+      return onto;
+    case 'open':
+      return onto;
+    case 'save':
+      onto.save();
+      return onto;
+    case 'saveAs':
+      onto.save();
+      return onto;
+    default:
+      throw Error('Unknown action type');
+  }
+}
+
+function renderReducer(render: string, action: RenderAction) {
   switch (action.type) {
     case 'rerender':
       console.log('rerender');
@@ -95,34 +117,47 @@ function ontologyRenderReducer(render: string, action: Action) {
 }
 
 export const OntologyContext = createContext(ontology);
-export const OntologyRenderSignalContext = createContext(uuidv4());
-export const OntologyRenderDispatchContext = createContext<Dispatch<Action>>(
-  {} as Dispatch<Action>,
+export const OntologyDispatchContext = createContext<Dispatch<OntologyAction>>(
+  {} as Dispatch<OntologyAction>,
+);
+export const RenderSignalContext = createContext(uuidv4());
+export const RenderDispatchContext = createContext<Dispatch<RenderAction>>(
+  {} as Dispatch<RenderAction>,
 );
 
-export function useOntologyRenderSignal() {
-  return useContext(OntologyRenderSignalContext);
+export function useRenderSignal() {
+  return useContext(RenderSignalContext);
 }
 
 export function useOntology() {
   return useContext(OntologyContext);
 }
 
-export function useOntologyRenderDispatch() {
-  return useContext(OntologyRenderDispatchContext);
+export function useRenderDispatch() {
+  return useContext(RenderDispatchContext);
+}
+
+export function useOntologyDispatch() {
+  return useContext(OntologyDispatchContext);
 }
 
 export function OntologyProvider({ children }: Props) {
-  const [onto, setOnto] = useState(ontology);
-  const [rerender, dispatch] = useReducer(ontologyRenderReducer, uuidv4());
+  const [onto, ontologyDispatch] = useReducer(ontologyReducer, ontology);
+  const [render, renderDispatch] = useReducer(renderReducer, uuidv4());
+
+  window.file.on((value: string) => {
+    ontologyDispatch({ type: value as OntologyAction['type'] });
+  });
 
   return (
     <OntologyContext.Provider value={onto}>
-      <OntologyRenderSignalContext.Provider value={rerender}>
-        <OntologyRenderDispatchContext.Provider value={dispatch}>
-          {children}
-        </OntologyRenderDispatchContext.Provider>
-      </OntologyRenderSignalContext.Provider>
+      <OntologyDispatchContext.Provider value={ontologyDispatch}>
+        <RenderSignalContext.Provider value={render}>
+          <RenderDispatchContext.Provider value={renderDispatch}>
+            {children}
+          </RenderDispatchContext.Provider>
+        </RenderSignalContext.Provider>
+      </OntologyDispatchContext.Provider>
     </OntologyContext.Provider>
   );
 }

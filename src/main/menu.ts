@@ -4,6 +4,7 @@ import {
   shell,
   BrowserWindow,
   MenuItemConstructorOptions,
+  dialog,
 } from 'electron';
 
 interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
@@ -205,17 +206,20 @@ export default class MenuBuilder {
           {
             label: '&Open',
             accelerator: 'Ctrl+O',
-            click: () => this.mainWindow.webContents.send('file', 1),
+            click: () => {
+              dialog.showOpenDialog({ properties: ['openFile'] });
+              this.mainWindow.webContents.send('file', 'open');
+            },
           },
           {
             label: '&Save',
             accelerator: 'Ctrl+S',
-            click: () => this.mainWindow.webContents.send('file', 1);
+            click: () => this.mainWindow.webContents.send('file', 'save'),
           },
           {
             label: '&Save as',
             accelerator: 'Ctrl+Shift+S',
-            click: () => this.mainWindow.webContents.send('file', 1);
+            click: () => this.mainWindow.webContents.send('file', 'saveAs'),
           },
           {
             label: '&Close',

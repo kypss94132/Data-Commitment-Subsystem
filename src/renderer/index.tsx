@@ -11,9 +11,3 @@ window.electron.ipcRenderer.once('ipc-example', (arg) => {
   console.log(arg);
 });
 window.electron.ipcRenderer.sendMessage('ipc-example', ['ping']);
-
-// window.file.onUpdateCounter((value) => {
-//   const oldValue = Number(counter.innerText)
-//   const newValue = oldValue + value
-//   counter.innerText = newValue.toString()
-// })

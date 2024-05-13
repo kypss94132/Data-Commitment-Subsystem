@@ -5,7 +5,7 @@ import {
   OntologyContext,
   useOntology,
   useOntologyRenderDispatch,
-  useOntologyRenderSignal,
+  useRenderSignal,
 } from '../Ontology';
 
 function generateGraph(relations: DISGetType.Edge[], root: string) {
@@ -43,7 +43,7 @@ interface Props {
 
 function RGView({ graphName }: Props) {
   const onto = useOntology();
-  const renderSignal = useOntologyRenderSignal();
+  const renderSignal = useRenderSignal();
   const [relations, setRelations] = useState<DISGetType.Edge[]>(
     onto.getAllRelations(graphName),
   );

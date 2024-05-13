@@ -1,6 +1,6 @@
 // Disable no-unused-vars, broken for spread args
 /* eslint no-unused-vars: off */
-import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
+import { contextBridge, dialog, ipcRenderer, IpcRendererEvent } from 'electron';
 
 export type Channels = 'ipc-example';
 
@@ -22,12 +22,17 @@ const electronHandler = {
       ipcRenderer.once(channel, (_event, ...args) => func(...args));
     },
   },
-  file: {
-    new: (callback) =>
-      ipcRenderer.on('update-counter', (_event, value) => callback(value)),
-  },
 };
 
 contextBridge.exposeInMainWorld('electron', electronHandler);
 
+const fileHandler = {
+  on: (callback) => {
+    ipcRenderer.on('file', (_event, value) => callback(value));
+  },
+};
+
+contextBridge.exposeInMainWorld('file', fileHandler);
+
 export type ElectronHandler = typeof electronHandler;
+export type FileHandler = typeof fileHandler;

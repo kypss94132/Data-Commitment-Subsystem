@@ -1,5 +1,5 @@
 import { useContext, useState, useId } from 'react';
-import { OntologyContext, OntologyRenderDispatchContext } from './Ontology';
+import { OntologyContext, RenderDispatchContext } from './Ontology';
 import TabList from './components/TabList';
 import RGView from './components/RGView';
 import { DISGetType } from '../main/discore/type';
@@ -14,7 +14,7 @@ function RootedGraph() {
   const [current, setCurrent] = useState<number | null>(null);
   const [status, setStatus] = useState(Status.BLANK); // ['BLANK', 'ADD', 'EDIT'
   const onto = useContext(OntologyContext);
-  const dispatch = useContext(OntologyRenderDispatchContext);
+  const dispatch = useContext(RenderDispatchContext);
   const [graph, setGraph] = useState<DISGetType.Graph | null>(null);
   const [tag, setTag] = useState('edge');
 
