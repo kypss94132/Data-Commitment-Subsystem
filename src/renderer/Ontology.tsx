@@ -79,8 +79,9 @@ interface RenderAction {
   type: 'rerender';
 }
 
-interface OntologyAction {
-  type: 'new' | 'open' | 'save' | 'saveAs';
+export interface OntologyAction {
+  type: string;
+  filePath?: string;
 }
 
 interface Signal {
@@ -90,9 +91,11 @@ interface Signal {
 function ontologyReducer(onto: DISOntology, action: OntologyAction) {
   console.log('Ontology action:', action);
   switch (action.type) {
-    case 'new':
-      onto.create();
-      return onto;
+    case 'new': {
+      const newOnto = new DISOntology();
+      newOnto.create();
+      return newOnto;
+    }
     case 'open':
       return onto;
     case 'save':
@@ -145,8 +148,11 @@ export function OntologyProvider({ children }: Props) {
   const [onto, ontologyDispatch] = useReducer(ontologyReducer, ontology);
   const [render, renderDispatch] = useReducer(renderReducer, uuidv4());
 
-  window.file.on((value: string) => {
-    ontologyDispatch({ type: value as OntologyAction['type'] });
+  window.file.on((type, filePath?) => {
+    ontologyDispatch({
+      type: type as string,
+      filePath: filePath as string,
+    });
   });
 
   return (

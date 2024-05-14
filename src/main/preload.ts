@@ -1,6 +1,7 @@
 // Disable no-unused-vars, broken for spread args
 /* eslint no-unused-vars: off */
-import { contextBridge, dialog, ipcRenderer, IpcRendererEvent } from 'electron';
+import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
+import { OntologyAction } from '../renderer/Ontology';
 
 export type Channels = 'ipc-example';
 
@@ -27,7 +28,7 @@ const electronHandler = {
 contextBridge.exposeInMainWorld('electron', electronHandler);
 
 const fileHandler = {
-  on: (callback) => {
+  on: (callback: (...arg: unknown[]) => void) => {
     ipcRenderer.on('file', (_event, value) => callback(value));
   },
 };

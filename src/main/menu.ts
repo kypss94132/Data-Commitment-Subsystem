@@ -206,9 +206,14 @@ export default class MenuBuilder {
           {
             label: '&Open',
             accelerator: 'Ctrl+O',
-            click: () => {
-              dialog.showOpenDialog({ properties: ['openFile'] });
-              this.mainWindow.webContents.send('file', 'open');
+            click: async () => {
+              const res = await dialog.showOpenDialog({
+                properties: ['openFile'],
+                filters: [{ name: 'DISEL Files', extensions: ['.xml'] }],
+              });
+              if (!res.canceled) {
+                this.mainWindow.webContents.send('file', 'open', res.filePaths);
+              }
             },
           },
           {

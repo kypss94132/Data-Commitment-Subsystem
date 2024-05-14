@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import Atom from './components/Atom';
 import { OntologyContext, RenderDispatchContext } from './Ontology';
 import Concept from './components/Concept';
-import { DISGetType, DISSetType } from '../main/discore/type';
+import { DISSetType } from '../main/discore/type';
 import BLView from './components/BLView';
 import TabList from './components/TabList';
 import Tab from './components/Tab';
