@@ -82,11 +82,14 @@ interface RenderAction {
 export interface OntologyAction {
   type: string;
   filePath?: string;
+  fileContent?: string;
 }
 
 interface Signal {
   signal: string;
 }
+
+let currentFilePath: string;
 
 function ontologyReducer(onto: DISOntology, action: OntologyAction) {
   console.log('Ontology action:', action);
@@ -96,14 +99,22 @@ function ontologyReducer(onto: DISOntology, action: OntologyAction) {
       newOnto.create();
       return newOnto;
     }
-    case 'open':
+    case 'open': {
+      const newOnto = new DISOntology();
+      currentFilePath = action.filePath!;
+      newOnto.loadFromString(action.fileContent!);
       return onto;
-    case 'save':
-      onto.save();
+    }
+    case 'save': {
+      const saveContent = onto.save();
       return onto;
-    case 'saveAs':
-      onto.save();
+    }
+    case 'saveAs': {
+      const saveContent = onto.save();
+      currentFilePath = action.filePath!;
+      window.file.save(currentFilePath, saveContent);
       return onto;
+    }
     default:
       throw Error('Unknown action type');
   }
@@ -148,10 +159,12 @@ export function OntologyProvider({ children }: Props) {
   const [onto, ontologyDispatch] = useReducer(ontologyReducer, ontology);
   const [render, renderDispatch] = useReducer(renderReducer, uuidv4());
 
-  window.file.on((type, filePath?) => {
+  window.file.on((type, filePath?, fileContent?) => {
+    console.log('File event:', type, filePath, fileContent);
     ontologyDispatch({
       type: type as string,
       filePath: filePath as string,
+      fileContent: fileContent as string,
     });
   });
 

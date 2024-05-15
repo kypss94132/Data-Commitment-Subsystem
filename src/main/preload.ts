@@ -31,6 +31,9 @@ const fileHandler = {
   on: (callback: (...arg: unknown[]) => void) => {
     ipcRenderer.on('file', (_event, value) => callback(value));
   },
+  save: (filePath: string, fileContent: string) => {
+    ipcRenderer.send('fileSave', 'save', filePath, fileContent);
+  },
 };
 
 contextBridge.exposeInMainWorld('file', fileHandler);

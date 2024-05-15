@@ -17,6 +17,7 @@ import installExtension, {
 } from 'electron-devtools-assembler';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+import * as fs from 'node:fs/promises';
 
 class AppUpdater {
   constructor() {
@@ -32,6 +33,18 @@ ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
   console.log(msgTemplate(arg));
   event.reply('ipc-example', msgTemplate('pong'));
+});
+
+ipcMain.on('fileSave', async (event, action, filePath, fileContent) => {
+  console.log('fileSave:', action, filePath, fileContent);
+  if (action === 'save') {
+    try {
+      await fs.writeFile(filePath, fileContent);
+      event.reply('file', 'save', 'success');
+    } catch (error) {
+      event.reply('file', 'save', 'error', error);
+    }
+  }
 });
 
 if (process.env.NODE_ENV === 'production') {

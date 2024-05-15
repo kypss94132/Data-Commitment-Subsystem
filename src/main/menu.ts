@@ -6,6 +6,7 @@ import {
   MenuItemConstructorOptions,
   dialog,
 } from 'electron';
+import * as fs from 'node:fs/promises';
 
 interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
   selector?: string;
@@ -209,10 +210,17 @@ export default class MenuBuilder {
             click: async () => {
               const res = await dialog.showOpenDialog({
                 properties: ['openFile'],
-                filters: [{ name: 'DISEL Files', extensions: ['.xml'] }],
+                filters: [{ name: 'DISEL Files', extensions: ['xml'] }],
               });
               if (!res.canceled) {
-                this.mainWindow.webContents.send('file', 'open', res.filePaths);
+                const fileHandle = await fs.open(res.filePaths[0], 'r');
+                const fileContent = (await fileHandle.readFile()).toString();
+                this.mainWindow.webContents.send(
+                  'file',
+                  'open',
+                  res.filePaths[0],
+                  fileContent,
+                );
               }
             },
           },
@@ -224,7 +232,19 @@ export default class MenuBuilder {
           {
             label: '&Save as',
             accelerator: 'Ctrl+Shift+S',
-            click: () => this.mainWindow.webContents.send('file', 'saveAs'),
+            click: async () => {
+              const res = await dialog.showOpenDialog({
+                properties: ['openFile', 'promptToCreate'],
+                filters: [{ name: 'DISEL Files', extensions: ['xml'] }],
+              });
+              if (!res.canceled) {
+                this.mainWindow.webContents.send(
+                  'file',
+                  'saveAs',
+                  res.filePaths[0],
+                );
+              }
+            },
           },
           {
             label: '&Close',
