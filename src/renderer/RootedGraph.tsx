@@ -1,5 +1,5 @@
-import { useContext, useState, useId } from 'react';
-import { OntologyContext, RenderDispatchContext } from './Ontology';
+import { useState } from 'react';
+import { useOntology, useRenderDispatch } from './Ontology';
 import TabList from './components/TabList';
 import RGView from './components/RGView';
 import { DISGetType } from '../main/discore/type';
@@ -13,8 +13,8 @@ enum Status {
 function RootedGraph() {
   const [current, setCurrent] = useState<number | null>(null);
   const [status, setStatus] = useState(Status.BLANK); // ['BLANK', 'ADD', 'EDIT'
-  const onto = useContext(OntologyContext);
-  const dispatch = useContext(RenderDispatchContext);
+  const onto = useOntology();
+  const dispatch = useRenderDispatch();
   const [graph, setGraph] = useState<DISGetType.Graph | null>(null);
   const [tag, setTag] = useState('edge');
 
@@ -125,7 +125,7 @@ function RootedGraph() {
         </div>
 
         <div className="flex flex-col overflow-y-auto w-full h-1/2 border-b">
-          <TabList
+          {/* <TabList
             tabs={['edge', 'virtual concept']}
             activeTab={tag}
             onTabClick={(tab) => {
@@ -133,7 +133,7 @@ function RootedGraph() {
               setCurrent(null);
               setStatus(Status.BLANK);
             }}
-          />
+          /> */}
           <div className="grow">
             <form
               onSubmit={(e) => {
@@ -185,16 +185,6 @@ function RootedGraph() {
               </table>
             </form>
           </div>
-          {/* <div className="grow" /> */}
-          {/* <div className="flex flex-row w-full">
-            <button
-              className="btn btn-success w-1/2"
-              onClick={() => setStatus(Status.ADD)}
-            >
-              ADD
-            </button>
-            <div className="btn btn-error w-1/2">DELETE</div>
-          </div> */}
         </div>
         <div className="flex flex-col h-1/2">
           <textarea />
@@ -203,7 +193,7 @@ function RootedGraph() {
       </div>
 
       <div className="flex justify-center items-center w-1/2">
-        { graph && <RGView graphName={graph.name} />}
+        {graph && <RGView graphName={graph.name} />}
       </div>
     </div>
   );

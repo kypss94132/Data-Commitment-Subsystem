@@ -15,9 +15,9 @@ import log from 'electron-log';
 import installExtension, {
   REACT_DEVELOPER_TOOLS,
 } from 'electron-devtools-assembler';
+import * as fs from 'node:fs/promises';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
-import * as fs from 'node:fs/promises';
 
 class AppUpdater {
   constructor() {
@@ -35,8 +35,8 @@ ipcMain.on('ipc-example', async (event, arg) => {
   event.reply('ipc-example', msgTemplate('pong'));
 });
 
-ipcMain.on('fileSave', async (event, action, filePath, fileContent) => {
-  console.log('fileSave:', action, filePath, fileContent);
+ipcMain.on('fileContent', async (event, action, filePath, fileContent) => {
+  console.log('fileContent:', action, filePath, fileContent);
   if (action === 'save') {
     try {
       await fs.writeFile(filePath, fileContent);
@@ -142,6 +142,8 @@ app.on('window-all-closed', () => {
     app.quit();
   }
 });
+
+app.commandLine.appendSwitch('--enable-features', 'OverlayScrollbar');
 
 app
   .whenReady()

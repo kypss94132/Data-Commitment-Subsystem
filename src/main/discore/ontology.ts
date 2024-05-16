@@ -337,46 +337,55 @@ class DISOntology {
     // TODO: how to remove all relation related to this concept?
   }
 
-  public setVirtualConcept(name: string): void {
+  public setVirtualConcept(virtualConcept: DISSetType.VirtualConcept): void {
     this.verifyInit();
 
-    const virtualConceptNode = xpath.select1(
-      `/ontology/virtualConcept[text()="${name}"]`,
+    let vcNode = xpath.select1(
+      `/ontology/virtualConcept[name="${virtualConcept.name}"]`,
       this.doc,
     ) as Node;
 
-    if (virtualConceptNode === undefined) {
-      const virtualConceptElem = this.doc.createElement(
-        'virtualConcept',
-      ) as Node;
-      virtualConceptElem.textContent = name;
-      this.doc.documentElement.appendChild(virtualConceptElem);
+    if (vcNode === undefined) {
+      vcNode = this.doc.createElement('virtualConcept') as Node;
+      this.doc.documentElement.appendChild(vcNode);
+      const vcElem = node2elem(vcNode);
+      vcElem.appendChild(
+        createElementWithText(this.doc, 'name', virtualConcept.name),
+      );
     }
+
+    const vcElem = node2elem(vcNode);
+    setItem(vcElem, 'description', virtualConcept.description);
   }
 
-  /**
-   * Check whether a virtual concept exists or not.
-   * For now, the virtual concept is just a string.
-   * So we don't provide a getter for it.
-   * @param name the name of the virtual concept to get
-   * @returns whether the virtual concept exists or not
-   */
-  public hasVirtualConcept(name: string): boolean {
+  public getVirtualConcept(name: string): DISGetType.VirtualConcept | null {
     this.verifyInit();
-
-    const virtualConceptNode = xpath.select1(
-      `/ontology/virtualConcept[text()="${name}"]`,
+    const vcNode = xpath.select1(
+      `/ontology/virtualConcept[name="${name}"]`,
       this.doc,
     ) as Node;
 
-    return virtualConceptNode !== undefined;
+    if (vcNode === undefined) {
+      return null;
+    }
+
+    const vcName = (xpath.select1('./name', vcNode) as Node).textContent!;
+    console.log('vcName: ', vcName);
+    const vcDesc = (xpath.select1('./description', vcNode) as Node)
+      ?.textContent!;
+    console.log('vcDesc: ', vcDesc);
+
+    return {
+      name: vcName,
+      description: vcDesc,
+    };
   }
 
   public removeVirtualConcept(name: string): void {
     this.verifyInit();
 
     const virtualConceptNode = xpath.select1(
-      `/ontology/virtualConcept[text()="${name}"]`,
+      `/ontology/virtualConcept[name="${name}"]`,
       this.doc,
     ) as Node;
 
@@ -394,8 +403,12 @@ class DISOntology {
     ) as Array<Node>;
 
     return virtualConceptNodes.map((node) => {
+      const vcName = (xpath.select1('./name', node) as Node).textContent!;
+      const vcDesc = (xpath.select1('./description', node) as Node)?.textContent!;
+
       return {
-        name: node.textContent!,
+        name: vcName,
+        description: vcDesc,
       };
     });
   }
@@ -513,7 +526,7 @@ class DISOntology {
     ) as Node;
 
     const n3 = xpath.select1(
-      `/ontology/virtualConcept[text()="${nodeName}"]`,
+      `/ontology/virtualConcept[name="${nodeName}"]`,
       this.doc,
     ) as Node;
 

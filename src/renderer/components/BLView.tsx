@@ -1,20 +1,12 @@
 import Graph, { Options } from 'react-graph-vis';
-import {
-  memo,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Combination, combination } from 'js-combinatorics';
-import { DISGetType } from '../../main/discore/type';
-import { OntologyContext } from '../Ontology';
+import { useOntology, useRenderSignal } from '../Ontology';
 
-interface Props {
-  concepts: DISGetType.Concept[];
-  atoms: DISGetType.Atom[];
-}
+// interface Props {
+//   concepts: DISGetType.Concept[];
+//   atoms: DISGetType.Atom[];
+// }
 
 function isSuperset<T>(set: Set<T>, subset: Set<T>) {
   // eslint-disable-next-line no-restricted-syntax
@@ -84,21 +76,20 @@ function generateGraph(atoms: string[]) {
 }
 
 function BLView() {
-  const onto = useContext(OntologyContext);
-  const [atoms, setAtoms] = useState<string[]>([]);
+  const onto = useOntology();
+  const renderSignal = useRenderSignal();
+  const [graph, setGraph] = useState<any>({ nodes: [], edges: [] });
+  const [atoms, setAtoms] = useState<string[]>(
+    onto.getAllAtoms().map((a) => a.name),
+  );
+
+  console.log('render');
 
   useEffect(() => {
-    // const updatedAtoms = onto.getAllAtoms().map((a) => a.name);
-    // console.log(atoms, updatedAtoms);
-    // if (!arrayEqual(atoms, updatedAtoms)) {
-    // }
+    console.log('effect');
     setAtoms(onto.getAllAtoms().map((a) => a.name));
-  }, [onto]);
-
-  const graph = useMemo(() => {
-    const { nodes, edges } = generateGraph(atoms);
-    return { nodes, edges };
-  }, [atoms]);
+    setGraph(generateGraph(onto.getAllAtoms().map((a) => a.name)));
+  }, [onto, renderSignal]);
 
   const [options, setOptions] = useState<Options>({
     autoResize: true,

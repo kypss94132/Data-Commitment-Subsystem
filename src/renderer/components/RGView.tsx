@@ -1,12 +1,7 @@
 import Graph, { Options } from 'react-graph-vis';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { DISGetType } from '../../main/discore/type';
-import {
-  OntologyContext,
-  useOntology,
-  useOntologyRenderDispatch,
-  useRenderSignal,
-} from '../Ontology';
+import { useOntology, useRenderSignal } from '../Ontology';
 
 function generateGraph(relations: DISGetType.Edge[], root: string) {
   const nodeSet = new Set<string>();
@@ -49,17 +44,17 @@ function RGView({ graphName }: Props) {
   );
   const [rg, setRg] = useState(onto.getRootedGraph(graphName));
 
-  console.log(onto);
   useEffect(() => {
-    console.log(onto);
     setRelations(onto.getAllRelations(graphName));
     setRg(onto.getRootedGraph(graphName));
   }, [onto, renderSignal, graphName]);
 
+  console.log('rg view render')
+
   const graph = generateGraph(relations, rg?.rootedAt!);
 
   const [options, setOptions] = useState<Options>({
-    // autoResize: true,
+    autoResize: true,
     // layout: {
     //   hierarchical: {
     //     direction: 'DU',

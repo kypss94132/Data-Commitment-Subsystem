@@ -202,7 +202,7 @@ export default class MenuBuilder {
           {
             label: '&New',
             accelerator: 'Ctrl+N',
-            click: () => this.mainWindow.webContents.send('file', 'new'),
+            click: () => this.mainWindow.webContents.send('fileMenu', 'new'),
           },
           {
             label: '&Open',
@@ -216,7 +216,7 @@ export default class MenuBuilder {
                 const fileHandle = await fs.open(res.filePaths[0], 'r');
                 const fileContent = (await fileHandle.readFile()).toString();
                 this.mainWindow.webContents.send(
-                  'file',
+                  'fileMenu',
                   'open',
                   res.filePaths[0],
                   fileContent,
@@ -227,7 +227,7 @@ export default class MenuBuilder {
           {
             label: '&Save',
             accelerator: 'Ctrl+S',
-            click: () => this.mainWindow.webContents.send('file', 'save'),
+            click: () => this.mainWindow.webContents.send('fileMenu', 'save'),
           },
           {
             label: '&Save as',
@@ -239,7 +239,7 @@ export default class MenuBuilder {
               });
               if (!res.canceled) {
                 this.mainWindow.webContents.send(
-                  'file',
+                  'fileMenu',
                   'saveAs',
                   res.filePaths[0],
                 );

@@ -1,11 +1,11 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Atom from './components/Atom';
-import { OntologyContext, RenderDispatchContext } from './Ontology';
+import { useOntology, useRenderDispatch } from './Ontology';
 import Concept from './components/Concept';
-import { DISSetType } from '../main/discore/type';
+import { DISGetType, DISSetType } from '../main/discore/type';
 import BLView from './components/BLView';
 import TabList from './components/TabList';
-import Tab from './components/Tab';
+import VirtualConcept from './components/VirtualConcept';
 
 enum Status {
   BLANK,
@@ -14,47 +14,42 @@ enum Status {
 }
 
 function BooleanLattice() {
-  const onto = useContext(OntologyContext);
-  const dispatch = useContext(RenderDispatchContext);
+  const onto = useOntology();
+  const dispatch = useRenderDispatch();
 
   const [tag, setTag] = useState('atom');
-  // const [items, setItems] = useState([] as string[]);
   const [current, setCurrent] = useState<string | null>(null);
   const [atom, setAtom] = useState<DISSetType.Atom>({ name: '' });
   const [concept, setConcept] = useState<DISSetType.Concept>({
     name: '',
     latticeOfConcepts: [],
   });
+  const [vconcept, setVconcept] = useState<DISSetType.VirtualConcept>({
+    name: '',
+  });
   const [status, setStatus] = useState(Status.BLANK);
+
+  console.log(onto.getAllVirtualConcepts());
 
   useEffect(() => {
     if (status === Status.EDIT) {
       if (tag === 'atom') {
         setAtom(onto.getAtom(current!)!);
-      } else {
+      } else if (tag === 'concept') {
         setConcept(onto.getConcept(current!)!);
+      } else {
+        setVconcept(onto.getVirtualConcept(current!)!);
       }
     } else if (status === Status.ADD) {
       if (tag === 'atom') {
         setAtom({ name: '' });
-      } else {
+      } else if (tag === 'concept') {
         setConcept({ name: '', latticeOfConcepts: [] });
+      } else {
+        setVconcept({ name: '' });
       }
     }
   }, [current, onto, status, tag]);
-
-  const tab = ['atom', 'concept'].map((t) => (
-    <Tab
-      key={t}
-      tag={t}
-      active={tag === t}
-      onClick={() => {
-        setTag(t);
-        setCurrent(null);
-        setStatus(Status.BLANK);
-      }}
-    />
-  ));
 
   const [atomNames, setAtomNames] = useState(
     onto.getAllAtoms().map((a) => a.name),
@@ -63,7 +58,21 @@ function BooleanLattice() {
     onto.getAllConcepts().map((c) => c.name),
   );
 
-  const items = tag === 'atom' ? atomNames : conceptNames;
+  const [vconceptNames, setVconceptNames] = useState(
+    onto.getAllVirtualConcepts().map((c) => c.name),
+  );
+
+  let items;
+
+  if (tag === 'atom') {
+    items = atomNames;
+  } else if (tag === 'concept') {
+    items = conceptNames;
+  } else {
+    items = vconceptNames;
+  }
+
+  // const items = tag === 'atom' ? atomNames : conceptNames;
 
   const list = items.map((i) => (
     <div
@@ -102,7 +111,7 @@ function BooleanLattice() {
         }}
       />
     );
-  } else {
+  } else if (tag === 'concept') {
     edit = (
       <Concept
         isNew={status === Status.ADD}
@@ -124,6 +133,27 @@ function BooleanLattice() {
         }}
       />
     );
+  } else {
+    edit = (
+      <VirtualConcept
+        isNew={status === Status.ADD}
+        virtualConcept={vconcept}
+        setContent={setVconcept}
+        addVirtualConcept={() => {
+          if (onto.getVirtualConcept(vconcept.name) !== null) {
+            alert('Virtual Concept already exists');
+            return;
+          }
+          onto.setVirtualConcept(vconcept);
+          setStatus(Status.BLANK);
+          setVconceptNames(onto.getAllVirtualConcepts().map((c) => c.name));
+          // dispatch({ type: 'rerender' });
+        }}
+        updateVirtualConcept={() => {
+          onto.setVirtualConcept(vconcept);
+        }}
+      />
+    );
   }
 
   function addItem() {
@@ -131,29 +161,31 @@ function BooleanLattice() {
     setCurrent(null);
     setAtomNames(onto.getAllAtoms().map((a) => a.name));
     setConceptNames(onto.getAllConcepts().map((c) => c.name));
+    setVconceptNames(onto.getAllVirtualConcepts().map((c) => c.name));
   }
 
   function delItem() {
     if (tag === 'atom') {
       onto.removeAtom(current!);
       setAtomNames(onto.getAllAtoms().map((a) => a.name));
-    } else {
+    } else if (tag === 'concept') {
       onto.removeConcept(current!);
       setConceptNames(onto.getAllConcepts().map((c) => c.name));
+    } else {
+      onto.removeVirtualConcept(current!);
+      setVconceptNames(onto.getAllVirtualConcepts().map((c) => c.name));
     }
     setCurrent(null);
     setStatus(Status.BLANK);
+    dispatch({ type: 'rerender' });
   }
 
   return (
     <div className="flex flex-row h-full">
       {/* sidebar */}
       <div className="min-w-60 flex flex-col border">
-        {/* <div role="tablist" className="tabs tabs-bordered">
-          {tab}
-        </div> */}
         <TabList
-          tabs={['atom', 'concept']}
+          tabs={['atom', 'concept', 'virtualConcept']}
           activeTab={tag}
           onTabClick={(tab) => {
             setTag(tab);
@@ -177,14 +209,14 @@ function BooleanLattice() {
       </div>
 
       {/* main */}
-      <div className="flex flex-col flex-grow">
+      <div className="flex flex-col flex-grow h-full">
         {/* upper view */}
         <div className="h-3/5">
           <BLView />
         </div>
 
         {/* lower edit */}
-        <div className="h-2/5 border-t p-2 overflow-y-auto">{edit}</div>
+        <div className="h-2/5 border-t p-2">{edit}</div>
       </div>
     </div>
   );

@@ -4,14 +4,14 @@ import {
   RouterProvider,
   Outlet,
 } from 'react-router-dom';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import icon from '../../assets/icon.svg';
 import './App.css';
 import 'tailwindcss/tailwind.css';
 import BooleanLattice from './BooleanLattice';
 import RootedGraph from './RootedGraph';
 
-import { OntologyContext, OntologyProvider } from './Ontology';
+import { OntologyProvider, useOntology } from './Ontology';
 
 function Hello() {
   return (
@@ -19,24 +19,8 @@ function Hello() {
       <div className="Hello">
         <img width="200" alt="icon" src={icon} />
       </div>
-      <h1>electron-react-boilerplate</h1>
-      <div role="alert" className="absolute alert alert-error">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="stroke-current shrink-0 h-6 w-6"
-          fill="none"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
-        <span>Error! Task failed successfully.</span>
-      </div>
-      <div className="Hello">
+      <h1>Welcome to use DIS Platform</h1>
+      {/* <div className="Hello">
         <a
           href="https://electron-react-boilerplate.js.org/"
           target="_blank"
@@ -61,14 +45,13 @@ function Hello() {
             Donate
           </button>
         </a>
-        <Link to="boolean-lattice">boolean</Link>
-      </div>
+        <Link to="boolean-lattice">boolean</Link> */}
+      {/* </div> */}
     </div>
   );
 }
 
 function Navagation() {
-  const [onto, setOnto] = useState(useContext(OntologyContext));
   const [active, setActive] = useState('home');
   const items = [
     {
@@ -101,7 +84,7 @@ function Navagation() {
   return (
     <div className="w-dvw h-dvh flex flex-col">
       <div className="navbar border-y">{links}</div>
-      <div className="content flex-grow">
+      <div className="h-4/5 flex-grow">
         <Outlet />
       </div>
     </div>
@@ -129,8 +112,8 @@ const router = createMemoryRouter([
   },
 ]);
 
-export default function App() {
-  const onto = useContext(OntologyContext);
+function Pages() {
+  const onto = useOntology();
 
   if (!onto.isInitialized()) {
     return (
@@ -140,9 +123,13 @@ export default function App() {
     );
   }
 
+  return <RouterProvider router={router} />;
+}
+
+export default function App() {
   return (
     <OntologyProvider>
-      <RouterProvider router={router} />
+      <Pages />
     </OntologyProvider>
   );
 }

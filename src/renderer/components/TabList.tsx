@@ -17,7 +17,7 @@ function TabList({ tabs, activeTab, onTabClick }: Props) {
   ));
 
   return (
-    <div role="tablist" className="tabs tabs-bordered">
+    <div role="tablist" className="tabs tabs-bordered overflow-x-hidden">
       {tab}
     </div>
   );

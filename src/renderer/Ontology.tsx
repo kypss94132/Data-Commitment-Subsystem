@@ -34,10 +34,22 @@ ontology.setRootedGraph({
   name: 'r1',
   rootedAt: 'c1',
 });
-ontology.setVirtualConcept('vc1');
-ontology.setVirtualConcept('vc2');
-ontology.setVirtualConcept('vc3');
-ontology.setVirtualConcept('vc4');
+ontology.setVirtualConcept({
+  name: 'vc1',
+  description: 'This is vc1',
+});
+ontology.setVirtualConcept({
+  name: 'vc2',
+  description: 'This is vc2',
+});
+ontology.setVirtualConcept({
+  name: 'vc3',
+  description: 'This is vc3',
+});
+ontology.setVirtualConcept({
+  name: 'vc4',
+  description: 'This is vc4',
+});
 ontology.setRelation(
   {
     from: 'vc1',
@@ -103,10 +115,11 @@ function ontologyReducer(onto: DISOntology, action: OntologyAction) {
       const newOnto = new DISOntology();
       currentFilePath = action.filePath!;
       newOnto.loadFromString(action.fileContent!);
-      return onto;
+      return newOnto;
     }
     case 'save': {
       const saveContent = onto.save();
+      window.file.save(currentFilePath, saveContent);
       return onto;
     }
     case 'saveAs': {
@@ -116,7 +129,7 @@ function ontologyReducer(onto: DISOntology, action: OntologyAction) {
       return onto;
     }
     default:
-      throw Error('Unknown action type');
+      throw Error(`Unknown action type: ${action.type}`);
   }
 }
 
@@ -130,12 +143,12 @@ function renderReducer(render: string, action: RenderAction) {
   }
 }
 
-export const OntologyContext = createContext(ontology);
-export const OntologyDispatchContext = createContext<Dispatch<OntologyAction>>(
+const OntologyContext = createContext(ontology);
+const OntologyDispatchContext = createContext<Dispatch<OntologyAction>>(
   {} as Dispatch<OntologyAction>,
 );
-export const RenderSignalContext = createContext(uuidv4());
-export const RenderDispatchContext = createContext<Dispatch<RenderAction>>(
+const RenderSignalContext = createContext(uuidv4());
+const RenderDispatchContext = createContext<Dispatch<RenderAction>>(
   {} as Dispatch<RenderAction>,
 );
 
