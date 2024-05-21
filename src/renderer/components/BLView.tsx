@@ -1,12 +1,7 @@
-import Graph, { Options } from 'react-graph-vis';
-import { useEffect, useMemo, useState } from 'react';
+import Graph, { Events, Options } from 'react-graph-vis';
+import { useEffect, useState } from 'react';
 import { Combination, combination } from 'js-combinatorics';
 import { useOntology, useRenderSignal } from '../Ontology';
-
-// interface Props {
-//   concepts: DISGetType.Concept[];
-//   atoms: DISGetType.Atom[];
-// }
 
 function isSuperset<T>(set: Set<T>, subset: Set<T>) {
   // eslint-disable-next-line no-restricted-syntax
@@ -83,13 +78,17 @@ function BLView() {
     onto.getAllAtoms().map((a) => a.name),
   );
 
-  console.log('render');
+  // console.log('render');
 
   useEffect(() => {
-    console.log('effect');
+    // console.log('effect');
     setAtoms(onto.getAllAtoms().map((a) => a.name));
     setGraph(generateGraph(onto.getAllAtoms().map((a) => a.name)));
   }, [onto, renderSignal]);
+
+  window.addEventListener('resize', () => {
+    setGraph(generateGraph(atoms));
+  });
 
   const [options, setOptions] = useState<Options>({
     autoResize: true,
@@ -112,9 +111,9 @@ function BLView() {
     },
   });
 
-  const events = {
-    select(event) {
-      const { nodes, edges } = event;
+  const events: Events = {
+    resize: (event) => {
+      console.log('resize: ', event);
     },
   };
 
@@ -122,10 +121,14 @@ function BLView() {
     <Graph
       graph={graph}
       options={options}
-      // events={events}
-      // getNetwork={(network) => {
-      //   //  if you want access to vis.js network api you can set the state in a parent component using this property
-      // }}
+      events={events}
+      getNetwork={(network) => {
+        //  if you want access to vis.js network api you can set the state in a parent component using this property
+        window.addEventListener('resize', () => {
+          console.log('window resize');
+          network.setSize('300', '200');
+        });
+      }}
     />
   );
 }

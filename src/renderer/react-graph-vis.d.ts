@@ -71,10 +71,103 @@ declare module 'react-graph-vis' {
     physics?: any;
   };
 
+  export type ClickEvent = {
+    nodes: any[];
+    edges: any[];
+    event: any;
+    pointer: {
+      DOM: { x: number; y: number };
+      canvas: { x: number; y: number };
+    };
+    items: any[];
+  };
+
+  export type DeselectEvent = ClickEvent & {
+    previousSelection: {
+      nodes: any[];
+      edges: any[];
+    };
+  };
+
+  export type DraggingEvent = ClickEvent & {
+    controlEdge: {
+      from: number;
+      to: number;
+    };
+  };
+
+  export type NodeEvent = {
+    node: number;
+  };
+
+  export type EdgeEvent = {
+    edge: number;
+  };
+
+  export type ZoomEvent = {
+    direction: '+' | '-';
+    scale: number;
+    pointer: {
+      x: number;
+      y: number;
+    };
+  };
+
+  export type Events = {
+    // Events triggered by human interaction, selection, dragging etc.
+    click?: (event: ClickEvent) => void;
+    doubleClick?: (event: ClickEvent) => void;
+    oncontext?: (event: ClickEvent) => void;
+    hold?: (event: ClickEvent) => void;
+    release?: (event: ClickEvent) => void;
+    select?: (event: ClickEvent) => void;
+    selectNode?: (event: ClickEvent) => void;
+    selectEdge?: (event: ClickEvent) => void;
+    deselectNode?: (event: DeselectEvent) => void;
+    deselectEdge?: (event: DeselectEvent) => void;
+    dragStart?: (event: ClickEvent) => void;
+    dragging?: (event: ClickEvent) => void;
+    dragEnd?: (event: ClickEvent) => void;
+    controlNodeDragging?: (event: DraggingEvent) => void;
+    controlNodeDragEnd?: (event: DraggingEvent) => void;
+    hoverNode?: (event: NodeEvent) => void;
+    blurNode?: (event: NodeEvent) => void;
+    hoverEdge?: (event: EdgeEvent) => void;
+    blurEdge?: (event: EdgeEvent) => void;
+    zoom?: (event: ZoomEvent) => void;
+    showPopup?: (id: number) => void;
+    hidePopup?: () => void;
+    // Events triggered the physics simulation. Can be used to trigger GUI updates.
+    startStabilizing?: () => void;
+    stabilizationProgress?: (event: {
+      iterations: number; // iterations so far,
+      total: number; // total iterations in options
+    }) => void;
+    stabilizationIterationsDone?: () => void;
+    stabilized?: (event: {
+      iterations: number; // iterations so far,
+    }) => void;
+    // Event triggered by the canvas.
+    resize?: (event: {
+      width: number; // the new width  of the canvas
+      height: number; // the new height of the canvas
+      oldWidth: number; // the old width  of the canvas
+      oldHeight: number; // the old height of the canvas
+    }) => void;
+    // Events triggered by the rendering module. Can be used to draw custom elements on the canvas.
+    initRedraw?: () => void;
+    beforeDrawing?: (ctx: any) => void;
+    afterDrawing?: (ctx: any) => void;
+    // Event triggered by the view module.
+    animationFinished?: () => void;
+    // Event triggered by the configuration module.
+    configChange?: (config: any) => void;
+  };
+
   export type GraphProps = {
     graph?: { nodes: any[]; edges: any[] };
     options?: Options;
-    events?: any;
+    events?: Events;
     getNetwork?: (network: any) => void;
   };
 

@@ -16,7 +16,6 @@ function RootedGraph() {
   const onto = useOntology();
   const dispatch = useRenderDispatch();
   const [graph, setGraph] = useState<DISGetType.Graph | null>(null);
-  const [tag, setTag] = useState('edge');
 
   let graphs = onto.getAllRootedGraphs().map((g) => {
     return <option value={g.name}>{g.name}</option>;
@@ -50,60 +49,34 @@ function RootedGraph() {
 
   let rows;
   if (graph !== null) {
-    if (tag === 'edge') {
-      const edges = onto.getAllRelations(graph.name);
-      console.log(edges);
-      rows = edges.map((edge, idx) => (
-        <tr
-          key={idx}
-          onClick={() => setCurrent(idx)}
-          className={current === idx ? 'bg-gray-200' : 'bg-white'}
-        >
-          <th className="w-10">
-            <button
-              type="button"
-              className="btn btn-sm btn-error"
-              onClick={() => {
-                onto.removeRelation(
-                  { from: edge.from, to: edge.to, relation: edge.relation },
-                  graph.name,
-                );
-                dispatch({ type: 'rerender' });
-              }}
-            >
-              ×
-            </button>
-          </th>
-          <td>{edge.from}</td>
-          <td>{edge.to}</td>
-          <td>{edge.relation}</td>
-        </tr>
-      ));
-    } else {
-      const vcs = onto.getAllVirtualConcepts();
-      console.log(vcs);
-      rows = vcs.map((vc, idx) => {
-        return (
-          <tr key={idx}>
-            <th>
-              <button
-                type="button"
-                className="btn btn-sm btn-error"
-                onClick={() => {
-                  onto.removeVirtualConcept(vc.name);
-                  dispatch({ type: 'rerender' });
-                }}
-              >
-                ×
-              </button>
-            </th>
-            <td>{vc.name}</td>
-            <td />
-            <td />
-          </tr>
-        );
-      });
-    }
+    const edges = onto.getAllRelations(graph.name);
+    console.log(edges);
+    rows = edges.map((edge, idx) => (
+      <tr
+        key={idx}
+        onClick={() => setCurrent(idx)}
+        className={current === idx ? 'bg-gray-200' : 'bg-white'}
+      >
+        <th className="w-10">
+          <button
+            type="button"
+            className="btn btn-sm btn-error"
+            onClick={() => {
+              onto.removeRelation(
+                { from: edge.from, to: edge.to, relation: edge.relation },
+                graph.name,
+              );
+              dispatch({ type: 'rerender' });
+            }}
+          >
+            ×
+          </button>
+        </th>
+        <td>{edge.from}</td>
+        <td>{edge.to}</td>
+        <td>{edge.relation}</td>
+      </tr>
+    ));
   }
 
   return (
