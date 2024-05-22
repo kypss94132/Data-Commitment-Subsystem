@@ -1,9 +1,10 @@
-import Graph, { Options } from 'react-graph-vis';
-import { useEffect, useState } from 'react';
+// import Graph, { Options } from 'react-graph-vis';
+import { memo, useEffect, useRef, useState } from 'react';
+import vis from 'vis-network';
 import { DISGetType } from '../../main/discore/type';
 import { useOntology, useRenderSignal } from '../Ontology';
 
-function generateGraph(relations: DISGetType.Edge[], root: string) {
+function generateGraph(relations: DISGetType.Edge[], root: string): vis.Data {
   const nodeSet = new Set<string>();
 
   relations.forEach((edge) => {
@@ -21,9 +22,12 @@ function generateGraph(relations: DISGetType.Edge[], root: string) {
     label: root,
   });
 
-  const edges = relations.map((edge) => ({
+  const edges: vis.Edge[] = relations.map((edge) => ({
     from: edge.from,
     to: edge.to,
+    arrows: {
+      to: true,
+    },
   }));
 
   return {
@@ -36,7 +40,7 @@ interface Props {
   graphName: string;
 }
 
-function RGView({ graphName }: Props) {
+const RGView = memo(function RGView({ graphName }: Props) {
   const onto = useOntology();
   const renderSignal = useRenderSignal();
   const [relations, setRelations] = useState<DISGetType.Edge[]>(
@@ -49,7 +53,7 @@ function RGView({ graphName }: Props) {
     setRg(onto.getRootedGraph(graphName));
   }, [onto, renderSignal, graphName]);
 
-  console.log('rg view render')
+  // console.log('rg view render')
 
   const graph = generateGraph(relations, rg?.rootedAt!);
 
@@ -80,16 +84,23 @@ function RGView({ graphName }: Props) {
     },
   };
 
-  return (
-    <Graph
-      graph={graph}
-      options={options}
-      // events={events}
-      // getNetwork={(network) => {
-      //   //  if you want access to vis.js network api you can set the state in a parent component using this property
-      // }}
-    />
+  const container = useRef(null);
+
+  const [network, setNetwork] = useState<vis.Network | null>(
+    container.current && new vis.Network(container.current, graph, options),
   );
-}
+
+  return (
+    // <Graph
+    //   graph={graph}
+    //   options={options}
+    //   // events={events}
+    //   // getNetwork={(network) => {
+    //   //   //  if you want access to vis.js network api you can set the state in a parent component using this property
+    //   // }}
+    // />
+    <div className="w-full h-full" ref={container} id="rgview" />
+  );
+});
 
 export default RGView;

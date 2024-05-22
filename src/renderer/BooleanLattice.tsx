@@ -1,8 +1,15 @@
-import { useEffect, useState } from 'react';
+/**
+ * Although this width or height won't be used,
+ * all the element, which has a flex-grow class,
+ * must have a width or a height on the target axis.
+ * Otherwise, the element will have some unexpected problem.
+ */
+
+import { useDeferredValue, useEffect, useState } from 'react';
 import Atom from './components/Atom';
 import { useOntology, useRenderDispatch } from './Ontology';
 import Concept from './components/Concept';
-import { DISGetType, DISSetType } from '../main/discore/type';
+import { DISSetType } from '../main/discore/type';
 import BLView from './components/BLView';
 import TabList from './components/TabList';
 import VirtualConcept from './components/VirtualConcept';
@@ -29,7 +36,7 @@ function BooleanLattice() {
   });
   const [status, setStatus] = useState(Status.BLANK);
 
-  console.log(onto.getAllVirtualConcepts());
+  // console.log(onto.getAllVirtualConcepts());
 
   useEffect(() => {
     if (status === Status.EDIT) {
@@ -180,6 +187,8 @@ function BooleanLattice() {
     dispatch({ type: 'rerender' });
   }
 
+  const blView = useDeferredValue(<BLView />);
+
   return (
     <div className="flex flex-row h-full">
       {/* sidebar */}
@@ -194,7 +203,7 @@ function BooleanLattice() {
           }}
         />
 
-        <div className="grow w-full">
+        <div className="flex-grow w-full">
           <div className="join join-vertical w-full">{list}</div>
         </div>
 
@@ -209,7 +218,7 @@ function BooleanLattice() {
       </div>
 
       {/* main */}
-      <div className="flex flex-col flex-grow h-full">
+      <div className="flex flex-col flex-grow w-10 h-full">
         {/* upper view */}
         <div className="h-3/5">
           <BLView />

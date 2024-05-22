@@ -1,7 +1,10 @@
-import Graph, { Events, Options } from 'react-graph-vis';
-import { useEffect, useState } from 'react';
+// import Graph, { Events, Options } from 'react-graph-vis';
+import { memo, useEffect, useRef, useState } from 'react';
 import { Combination, combination } from 'js-combinatorics';
+import vis from 'vis-network';
+import { net } from 'electron';
 import { useOntology, useRenderSignal } from '../Ontology';
+import { DISGetType } from '../../main/discore/type';
 
 function isSuperset<T>(set: Set<T>, subset: Set<T>) {
   // eslint-disable-next-line no-restricted-syntax
@@ -17,7 +20,10 @@ function arrayEqual<T>(a: T[], b: T[]): boolean {
   return a.length === b.length && a.every((v, i) => v === b[i]);
 }
 
-function generateGraph(atoms: string[]) {
+function generateGraph(
+  atoms: string[],
+  concepts: Map<string, string>,
+): vis.Data {
   const len = atoms.length;
   const blItems: Set<string>[] = [];
   const edges: any[] = [];
@@ -57,10 +63,11 @@ function generateGraph(atoms: string[]) {
   }
 
   const nodes = blItems.map((item, idx) => {
+    const arr = [...item].sort();
     return {
       id: idx,
-      label: item.size === 0 ? '⊥' : [...item].join(','),
-      title: [...item].join(','),
+      label: concepts.get(arr.toString()) || '',
+      // title: arr.join(','),
     };
   });
 
@@ -70,28 +77,33 @@ function generateGraph(atoms: string[]) {
   };
 }
 
-function BLView() {
+const BLView = memo(function BLView() {
   const onto = useOntology();
   const renderSignal = useRenderSignal();
-  const [graph, setGraph] = useState<any>({ nodes: [], edges: [] });
-  const [atoms, setAtoms] = useState<string[]>(
-    onto.getAllAtoms().map((a) => a.name),
-  );
+  const [graph, setGraph] = useState<vis.Data>({ nodes: [], edges: [] });
+  const container = useRef<HTMLDivElement>(null);
 
-  // console.log('render');
+  console.log('render');
 
   useEffect(() => {
     // console.log('effect');
-    setAtoms(onto.getAllAtoms().map((a) => a.name));
-    setGraph(generateGraph(onto.getAllAtoms().map((a) => a.name)));
+    // setAtoms(onto.getAllAtoms().map((a) => a.name));
+    const atoms = onto.getAllAtoms().map((a) => a.name);
+    const concepts = onto.getAllConcepts();
+    const conceptMap = new Map<string, string>();
+    conceptMap.set([].toString(), '⊥');
+    conceptMap.set(atoms.toString(), '⊤');
+    concepts.forEach((c) => {
+      conceptMap.set(c.latticeOfConcepts.slice().sort().toString(), c.name);
+    });
+    atoms.forEach((a) => {
+      conceptMap.set([a].toString(), a);
+    });
+    setGraph(generateGraph(atoms, conceptMap));
   }, [onto, renderSignal]);
 
-  window.addEventListener('resize', () => {
-    setGraph(generateGraph(atoms));
-  });
-
-  const [options, setOptions] = useState<Options>({
-    autoResize: true,
+  const [options, setOptions] = useState<vis.Options>({
+    // autoResize: false,
     layout: {
       hierarchical: {
         direction: 'DU',
@@ -102,6 +114,7 @@ function BLView() {
     edges: {
       color: '#000000',
     },
+
     // height: '500px',
     // configure: {
     //   // showButton: false,
@@ -111,26 +124,12 @@ function BLView() {
     },
   });
 
-  const events: Events = {
-    resize: (event) => {
-      console.log('resize: ', event);
-    },
-  };
+  const network =
+    container.current && new vis.Network(container.current, graph, options);
 
   return (
-    <Graph
-      graph={graph}
-      options={options}
-      events={events}
-      getNetwork={(network) => {
-        //  if you want access to vis.js network api you can set the state in a parent component using this property
-        window.addEventListener('resize', () => {
-          console.log('window resize');
-          network.setSize('300', '200');
-        });
-      }}
-    />
+    <div className="w-full h-full" ref={container} id="blview" />
   );
-}
+});
 
 export default BLView;

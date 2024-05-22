@@ -1,6 +1,5 @@
-import { useState } from 'react';
-import { useOntology, useRenderDispatch } from './Ontology';
-import TabList from './components/TabList';
+import { useEffect, useState } from 'react';
+import { useOntology, useRenderDispatch, useRenderSignal } from './Ontology';
 import RGView from './components/RGView';
 import { DISGetType } from '../main/discore/type';
 
@@ -15,7 +14,23 @@ function RootedGraph() {
   const [status, setStatus] = useState(Status.BLANK); // ['BLANK', 'ADD', 'EDIT'
   const onto = useOntology();
   const dispatch = useRenderDispatch();
+  const renderSignal = useRenderSignal();
   const [graph, setGraph] = useState<DISGetType.Graph | null>(null);
+  const [possibleNodes, setPossibleNodes] = useState<string[]>([
+    ...onto.getAllAtoms().map((a) => a.name),
+    ...onto.getAllConcepts().map((c) => c.name),
+    ...onto.getAllVirtualConcepts().map((c) => c.name),
+  ]);
+
+  const datalist = possibleNodes.map((node) => <option value={node} />);
+
+  useEffect(() => {
+    setPossibleNodes([
+      ...onto.getAllAtoms().map((a) => a.name),
+      ...onto.getAllConcepts().map((c) => c.name),
+      ...onto.getAllVirtualConcepts().map((c) => c.name),
+    ]);
+  }, [onto, renderSignal]);
 
   let graphs = onto.getAllRootedGraphs().map((g) => {
     return <option value={g.name}>{g.name}</option>;
@@ -36,10 +51,24 @@ function RootedGraph() {
         </button>
       </th>
       <td>
-        <input type="text" name="from" className="input input-bordered w-24" />
+        <input
+          list="from-nodes"
+          id="from"
+          type="text"
+          name="from"
+          className="input input-sm input-bordered"
+        />
+        <datalist id="from-nodes">{datalist}</datalist>
       </td>
       <td>
-        <input type="text" name="to" className="input input-bordered" />
+        <input
+          list="to-nodes"
+          id="to"
+          type="text"
+          name="to"
+          className="input input-sm input-bordered"
+        />
+        <datalist id="to-nodes">{datalist}</datalist>
       </td>
       <td>
         <input type="text" name="relation" className="input input-bordered" />
@@ -50,7 +79,7 @@ function RootedGraph() {
   let rows;
   if (graph !== null) {
     const edges = onto.getAllRelations(graph.name);
-    console.log(edges);
+    // console.log(edges);
     rows = edges.map((edge, idx) => (
       <tr
         key={idx}
