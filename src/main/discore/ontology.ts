@@ -2,6 +2,7 @@ import { DOMParser } from '@xmldom/xmldom';
 import xpath from 'xpath';
 import { createElementWithText, node2elem } from './utils';
 import { DISGetType, DISSetType } from './type';
+import formatXml from 'xml-formatter';
 
 /**
  * A help function to add or update a child element in an XML element.
@@ -105,9 +106,13 @@ class DISOntology {
     }
   }
 
+  /**
+   * Save the ontology to a formated XML string.
+   * @returns the XML string of the ontology
+   */
   public save(): string {
     this.verifyInit();
-    return this.doc.toString();
+    return formatXml(this.doc.toString());
   }
 
   public create(): DISOntology {

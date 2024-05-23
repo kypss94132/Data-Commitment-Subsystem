@@ -108,6 +108,7 @@
     "react-router-dom": "^6.16.0",
     "uuid": "^9.0.1",
     "vis-network": "^9.1.9",
+    "xml-formatter": "^3.6.2",
     "xpath": "^0.0.34"
   },
   "devDependencies": {
