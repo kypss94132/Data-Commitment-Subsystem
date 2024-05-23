@@ -12,15 +12,20 @@ function generateGraph(relations: DISGetType.Edge[], root: string): vis.Data {
     nodeSet.add(edge.to);
   });
 
-  const nodes = Array.from(nodeSet).map((node) => ({
+  nodeSet.delete(root);
+
+  const nodes: vis.Node[] = Array.from(nodeSet).map((node) => ({
     id: node,
     label: node,
   }));
 
-  nodes.push({
-    id: root,
-    label: root,
-  });
+  if (root) {
+    nodes.push({
+      id: root,
+      label: root,
+      color: '#ff0000',
+    });
+  }
 
   const edges: vis.Edge[] = relations.map((edge) => ({
     from: edge.from,
@@ -28,6 +33,7 @@ function generateGraph(relations: DISGetType.Edge[], root: string): vis.Data {
     arrows: {
       to: true,
     },
+    label: edge.relation,
   }));
 
   return {

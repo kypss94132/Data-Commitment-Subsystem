@@ -9,79 +9,79 @@ import { v4 as uuidv4 } from 'uuid';
 import DISOntology from '../main/discore/ontology';
 
 const ontology = new DISOntology();
-ontology.create();
-ontology.setAtom({
-  name: 'a1',
-  description: 'This is a1',
-});
-ontology.setAtom({
-  name: 'a2',
-  description: 'This is a2',
-});
-ontology.setAtom({
-  name: 'a3',
-  description: 'This is a3',
-});
-ontology.setAtom({
-  name: 'a4',
-  description: 'This is a4',
-});
-ontology.setConcept({
-  name: 'c1',
-  latticeOfConcepts: ['a1', 'a2'],
-});
-ontology.setRootedGraph({
-  name: 'r1',
-  rootedAt: 'c1',
-});
-ontology.setVirtualConcept({
-  name: 'vc1',
-  description: 'This is vc1',
-});
-ontology.setVirtualConcept({
-  name: 'vc2',
-  description: 'This is vc2',
-});
-ontology.setVirtualConcept({
-  name: 'vc3',
-  description: 'This is vc3',
-});
-ontology.setVirtualConcept({
-  name: 'vc4',
-  description: 'This is vc4',
-});
-ontology.setRelation(
-  {
-    from: 'vc1',
-    to: 'vc2',
-    relation: 'is-a',
-  },
-  'r1',
-);
-ontology.setRelation(
-  {
-    from: 'vc1',
-    to: 'vc3',
-    relation: 'is-a',
-  },
-  'r1',
-);
-ontology.setRelation(
-  {
-    from: 'vc2',
-    to: 'vc4',
-    relation: 'is-a',
-  },
-  'r1',
-);
-ontology.setRelation(
-  {
-    from: 'vc3',
-    to: 'vc4',
-    relation: 'is-a',
-  },
-  'r1',
-);
+// ontology.create();
+// ontology.setAtom({
+//   name: 'a1',
+//   description: 'This is a1',
+// });
+// ontology.setAtom({
+//   name: 'a2',
+//   description: 'This is a2',
+// });
+// ontology.setAtom({
+//   name: 'a3',
+//   description: 'This is a3',
+// });
+// ontology.setAtom({
+//   name: 'a4',
+//   description: 'This is a4',
+// });
+// ontology.setConcept({
+//   name: 'c1',
+//   latticeOfConcepts: ['a1', 'a2'],
+// });
+// ontology.setRootedGraph({
+//   name: 'r1',
+//   rootedAt: 'c1',
+// });
+// ontology.setVirtualConcept({
+//   name: 'vc1',
+//   description: 'This is vc1',
+// });
+// ontology.setVirtualConcept({
+//   name: 'vc2',
+//   description: 'This is vc2',
+// });
+// ontology.setVirtualConcept({
+//   name: 'vc3',
+//   description: 'This is vc3',
+// });
+// ontology.setVirtualConcept({
+//   name: 'vc4',
+//   description: 'This is vc4',
+// });
+// ontology.setRelation(
+//   {
+//     from: 'vc1',
+//     to: 'vc2',
+//     relation: 'is-a',
+//   },
+//   'r1',
+// );
+// ontology.setRelation(
+//   {
+//     from: 'vc1',
+//     to: 'vc3',
+//     relation: 'is-a',
+//   },
+//   'r1',
+// );
+// ontology.setRelation(
+//   {
+//     from: 'vc2',
+//     to: 'vc4',
+//     relation: 'is-a',
+//   },
+//   'r1',
+// );
+// ontology.setRelation(
+//   {
+//     from: 'vc3',
+//     to: 'vc4',
+//     relation: 'is-a',
+//   },
+//   'r1',
+// );
 
 interface Props {
   children: ReactNode;

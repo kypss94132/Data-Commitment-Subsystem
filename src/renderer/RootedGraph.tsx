@@ -71,7 +71,12 @@ function RootedGraph() {
         <datalist id="to-nodes">{datalist}</datalist>
       </td>
       <td>
-        <input type="text" name="relation" className="input input-bordered" />
+        <input
+          type="text"
+          name="relation"
+          className="input input-sm input-bordered"
+          defaultValue="is-a"
+        />
       </td>
     </tr>
   );
@@ -144,16 +149,20 @@ function RootedGraph() {
                 const form = e.target as HTMLFormElement;
                 const formData = new FormData(form);
 
-                onto.setRelation(
-                  {
-                    from: formData.get('from') as string,
-                    to: formData.get('to') as string,
-                    relation: formData.get('relation') as string,
-                  },
-                  graph!.name,
-                );
-                dispatch({ type: 'rerender' });
-                setStatus(Status.BLANK);
+                try {
+                  onto.setRelation(
+                    {
+                      from: formData.get('from') as string,
+                      to: formData.get('to') as string,
+                      relation: formData.get('relation') as string,
+                    },
+                    graph!.name,
+                  );
+                  dispatch({ type: 'rerender' });
+                  setStatus(Status.BLANK);
+                } catch (err) {
+                  alert(err.message);
+                }
               }}
             >
               <table className="table w-full">
@@ -161,7 +170,7 @@ function RootedGraph() {
                 <thead>
                   <tr>
                     <th>
-                      {status === Status.BLANK ? (
+                      {status === Status.BLANK && graph !== null ? (
                         <button
                           type="button"
                           className="btn btn-sm btn-primary"
