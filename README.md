@@ -2,7 +2,6 @@
 
 ## Introduction
 
-<<<<<<< HEAD
 This software is the new and rebuilt version of DISEL Editor from our research team. Because we found that C++ and Qt is not easy to deploy on the different platforms. Our researchers always trouble with how to link the dynamic linking library and facing many unexpected problems when compiling software. Such as Antlr4 only provides binary version of MSVC and the authors of RCpp and RInside refused to supply the compatible code in MSVC.
 
 The new version is built within Electron and React. We also supply new DIS Ontology API in JavaScript/TypeScript.
