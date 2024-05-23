@@ -96,7 +96,6 @@
     }
   },
   "dependencies": {
-    "@types/uuid": "^9.0.8",
     "@xmldom/xmldom": "^0.8.10",
     "electron-debug": "^3.2.0",
     "electron-log": "^4.4.8",
@@ -104,7 +103,6 @@
     "js-combinatorics": "^2.1.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-graph-vis": "^1.0.7",
     "react-router-dom": "^6.16.0",
     "uuid": "^9.0.1",
     "vis-network": "^9.1.9",
@@ -125,6 +123,7 @@
     "@types/react-dom": "^18.2.7",
     "@types/react-test-renderer": "^18.0.1",
     "@types/terser-webpack-plugin": "^5.0.4",
+    "@types/uuid": "^9.0.8",
     "@types/vis": "^4.21.27",
     "@types/webpack-bundle-analyzer": "^4.6.0",
     "@typescript-eslint/eslint-plugin": "^6.7.0",
