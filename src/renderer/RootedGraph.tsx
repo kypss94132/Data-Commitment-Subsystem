@@ -10,7 +10,10 @@ enum Status {
 }
 
 function RootedGraph() {
-  const [current, setCurrent] = useState<number | null>(null);
+  const [currentIdx, setCurrentIdx] = useState<number | null>(null);
+  const [currentEdge, setCurrentEdge] = useState<DISGetType.Relation | null>(
+    null,
+  );
   const [status, setStatus] = useState(Status.BLANK); // ['BLANK', 'ADD', 'EDIT'
   const onto = useOntology();
   const dispatch = useRenderDispatch();
@@ -21,6 +24,7 @@ function RootedGraph() {
     ...onto.getAllConcepts().map((c) => c.name),
     ...onto.getAllVirtualConcepts().map((c) => c.name),
   ]);
+  const [stasDesc, setStasDesc] = useState<string>('');
 
   const datalist = possibleNodes.map((node) => <option value={node} />);
 
@@ -88,8 +92,13 @@ function RootedGraph() {
     rows = edges.map((edge, idx) => (
       <tr
         key={idx}
-        onClick={() => setCurrent(idx)}
-        className={current === idx ? 'bg-gray-200' : 'bg-white'}
+        onClick={() => {
+          setCurrentIdx(idx);
+          const e = onto.getRelation(edge, graph!.name)!;
+          setCurrentEdge(e);
+          setStasDesc(e.predicate ?? '');
+        }}
+        className={currentIdx === idx ? 'bg-gray-200' : 'bg-white'}
       >
         <th className="w-10">
           <button
@@ -197,9 +206,32 @@ function RootedGraph() {
             </form>
           </div>
         </div>
-        <div className="flex flex-col h-1/2">
-          <textarea />
-          <div className="btn btn-primary">SAVE</div>
+        <div className="flex flex-col h-1/2 w-full">
+          <div className="text-lg text-center">Statistical Description</div>
+          <textarea
+            className="flex-grow m-2 mt-0 border h-full p-2"
+            disabled={currentIdx === null || status === Status.ADD}
+            value={stasDesc}
+            onChange={(e) => {
+              setStasDesc(e.target.value);
+            }}
+          />
+          <button
+            type="button"
+            className="btn btn-primary"
+            disabled={currentIdx === null || status === Status.ADD}
+            onClick={() => {
+              onto.setRelation(
+                {
+                  ...currentEdge!,
+                  predicate: stasDesc,
+                },
+                graph!.name,
+              );
+            }}
+          >
+            SAVE
+          </button>
         </div>
       </div>
 

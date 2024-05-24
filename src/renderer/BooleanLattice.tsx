@@ -137,6 +137,7 @@ function BooleanLattice() {
         }}
         updateConcept={() => {
           onto.setConcept(concept);
+          dispatch({ type: 'rerender' });
         }}
       />
     );

@@ -1,6 +1,7 @@
 import { ChangeEvent } from 'react';
 import Edit from './Edit';
 import { DISSetType } from '../../main/discore/type';
+import { useRenderDispatch } from '../Ontology';
 
 interface ConceptProps {
   concept: DISSetType.Concept;
@@ -19,12 +20,14 @@ function Concept({
   addConcept,
   updateConcept,
 }: ConceptProps) {
+  const dispatch = useRenderDispatch();
+
   function handleNameChange(e: ChangeEvent<HTMLInputElement>) {
     setContent({ ...concept, name: e.target.value });
   }
 
   function handleLatticeChange(e: ChangeEvent<HTMLInputElement>) {
-    console.log(e);
+    // console.log(e);
     const { name } = e.target;
     if (concept.latticeOfConcepts.includes(name)) {
       setContent({
@@ -37,7 +40,7 @@ function Concept({
         latticeOfConcepts: [...concept.latticeOfConcepts, name],
       });
     }
-    console.log(concept);
+    // console.log(concept);
   }
 
   function handleDescChange(e: ChangeEvent<HTMLTextAreaElement>) {

@@ -112,19 +112,21 @@ class DISOntology {
    */
   public save(): string {
     this.verifyInit();
-    return formatXml(this.doc.toString());
+    return formatXml(this.doc.toString(), {
+      collapseContent: true,
+    });
   }
 
   public create(): DISOntology {
     this.doc = new DOMParser().parseFromString(
       '<ontology><name></name><atomDomain></atomDomain></ontology>',
-      'text/xml',
+      'application/xml',
     );
     return this;
   }
 
   public loadFromString(str: string): DISOntology {
-    this.doc = new DOMParser().parseFromString(str, 'text/xml');
+    this.doc = new DOMParser().parseFromString(str, 'application/xml');
     return this;
   }
 

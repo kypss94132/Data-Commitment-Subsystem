@@ -62,14 +62,18 @@ function generateGraph(
     lowerStart = upperStart;
   }
 
+  console.log(blItems);
+
   const nodes = blItems.map((item, idx) => {
     const arr = [...item].sort();
     return {
       id: idx,
-      label: concepts.get(arr.toString()) || '',
+      label: concepts.get(arr.toString()) ?? '',
       // title: arr.join(','),
     };
   });
+
+  console.log(nodes);
 
   return {
     nodes,
