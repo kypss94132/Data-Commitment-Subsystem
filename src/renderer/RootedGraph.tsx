@@ -123,25 +123,49 @@ function RootedGraph() {
   }
 
   return (
-    <div className="flex flex-row h-full">
-      <div className="flex flex-col justify-center items-center w-1/2 h-full border-r">
-        <div className="flex flex-row items-center gap-2">
-          <div className="text-lg">Rooted Graph</div>
-          <select
-            className="select select-bordered select-sm"
-            value={graph?.name}
-            onChange={(e) =>
-              e.target.value && setGraph(onto.getRootedGraph(e.target.value))
-            }
+    <div className="flex flex-col h-full">
+      <div className="flex flex-col w-full border-b">
+        <div className="flex flex-row justify-center items-center gap-2 w-full p-2">
+          <button
+            type="button"
+            className="btn btn-sm btn-primary"
+            onClick={() => {}}
           >
-            {graphs}
-          </select>
-          <div className="text-lg">Is Rooted At </div>
-          <div className="text-lg font-bold">{graph?.rootedAt}</div>
+            +
+          </button>
+          <div className="flex flex-row flex-grow items-center justify-center gap-2">
+            <div className="text-lg">Rooted Graph</div>
+            <select
+              className="select select-bordered select-sm"
+              value={graph?.name}
+              onChange={(e) =>
+                e.target.value && setGraph(onto.getRootedGraph(e.target.value))
+              }
+            >
+              {graphs}
+            </select>
+            <div className="text-lg">Is Rooted At </div>
+            <div className="text-lg font-bold">{graph?.rootedAt}</div>
+          </div>
+          <button
+            type="button"
+            className="btn btn-sm btn-error"
+            onClick={() => {}}
+          >
+            ×
+          </button>
         </div>
+        <div className="flex flex-row gap-2 p-2 w-full items-center">
+          <div>Description</div>
+          <input className="border flex-grow" disabled value="test" />
+          <button type="button" className="btn btn-sm btn-circle btn-success">√</button>
+        </div>
+      </div>
 
-        <div className="flex flex-col overflow-y-auto w-full h-1/2 border-b">
-          {/* <TabList
+      <div className="flex flex-row h-full w-full">
+        <div className="flex flex-col justify-center items-center w-1/2 h-full border-r">
+          <div className="flex flex-col overflow-y-auto w-full h-1/2 border-b">
+            {/* <TabList
             tabs={['edge', 'virtual concept']}
             activeTab={tag}
             onTabClick={(tab) => {
@@ -150,93 +174,94 @@ function RootedGraph() {
               setStatus(Status.BLANK);
             }}
           /> */}
-          <div className="grow">
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
+            <div className="grow">
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
 
-                const form = e.target as HTMLFormElement;
-                const formData = new FormData(form);
+                  const form = e.target as HTMLFormElement;
+                  const formData = new FormData(form);
 
-                try {
-                  onto.setRelation(
-                    {
-                      from: formData.get('from') as string,
-                      to: formData.get('to') as string,
-                      relation: formData.get('relation') as string,
-                    },
-                    graph!.name,
-                  );
-                  dispatch({ type: 'rerender' });
-                  setStatus(Status.BLANK);
-                } catch (err) {
-                  alert(err.message);
-                }
+                  try {
+                    onto.setRelation(
+                      {
+                        from: formData.get('from') as string,
+                        to: formData.get('to') as string,
+                        relation: formData.get('relation') as string,
+                      },
+                      graph!.name,
+                    );
+                    dispatch({ type: 'rerender' });
+                    setStatus(Status.BLANK);
+                  } catch (err) {
+                    alert(err.message);
+                  }
+                }}
+              >
+                <table className="table w-full">
+                  {/* head */}
+                  <thead>
+                    <tr>
+                      <th>
+                        {status === Status.BLANK && graph !== null ? (
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-primary"
+                            onClick={() => {
+                              setStatus(Status.ADD);
+                            }}
+                          >
+                            +
+                          </button>
+                        ) : (
+                          '#'
+                        )}
+                      </th>
+                      <th>From</th>
+                      <th>To</th>
+                      <th>Relation</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {status === Status.ADD && edit}
+                    {rows}
+                  </tbody>
+                </table>
+              </form>
+            </div>
+          </div>
+          <div className="flex flex-col h-1/2 w-full">
+            <div className="text-lg text-center">Statistical Description</div>
+            <textarea
+              className="flex-grow m-2 mt-0 border h-full p-2 resize-none"
+              disabled={currentIdx === null || status === Status.ADD}
+              value={stasDesc}
+              onChange={(e) => {
+                setStasDesc(e.target.value);
+              }}
+            />
+            <button
+              type="button"
+              className="btn btn-primary"
+              disabled={currentIdx === null || status === Status.ADD}
+              onClick={() => {
+                onto.setRelation(
+                  {
+                    ...currentEdge!,
+                    predicate: stasDesc,
+                  },
+                  graph!.name,
+                );
               }}
             >
-              <table className="table w-full">
-                {/* head */}
-                <thead>
-                  <tr>
-                    <th>
-                      {status === Status.BLANK && graph !== null ? (
-                        <button
-                          type="button"
-                          className="btn btn-sm btn-primary"
-                          onClick={() => {
-                            setStatus(Status.ADD);
-                          }}
-                        >
-                          +
-                        </button>
-                      ) : (
-                        '#'
-                      )}
-                    </th>
-                    <th>From</th>
-                    <th>To</th>
-                    <th>Relation</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {status === Status.ADD && edit}
-                  {rows}
-                </tbody>
-              </table>
-            </form>
+              SAVE
+            </button>
           </div>
         </div>
-        <div className="flex flex-col h-1/2 w-full">
-          <div className="text-lg text-center">Statistical Description</div>
-          <textarea
-            className="flex-grow m-2 mt-0 border h-full p-2"
-            disabled={currentIdx === null || status === Status.ADD}
-            value={stasDesc}
-            onChange={(e) => {
-              setStasDesc(e.target.value);
-            }}
-          />
-          <button
-            type="button"
-            className="btn btn-primary"
-            disabled={currentIdx === null || status === Status.ADD}
-            onClick={() => {
-              onto.setRelation(
-                {
-                  ...currentEdge!,
-                  predicate: stasDesc,
-                },
-                graph!.name,
-              );
-            }}
-          >
-            SAVE
-          </button>
-        </div>
-      </div>
 
-      <div className="flex justify-center items-center w-1/2">
-        {graph && <RGView graphName={graph.name} />}
+        <div className="flex justify-center items-center w-1/2">
+          {graph && <RGView graphName={graph.name} />}
+        </div>
       </div>
     </div>
   );
