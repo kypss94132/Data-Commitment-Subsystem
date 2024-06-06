@@ -125,6 +125,12 @@ class DISOntology {
     return this;
   }
 
+  private checkNameValid(name: string) {
+    if (name === '' || name === undefined || name === null) {
+      throw new Error('Name cannot be empty, undefined or null');
+    }
+  }
+
   public loadFromString(str: string): DISOntology {
     this.doc = new DOMParser().parseFromString(str, 'application/xml');
     return this;
@@ -132,6 +138,7 @@ class DISOntology {
 
   public setName(name: string): void {
     this.verifyInit();
+    this.checkNameValid(name);
     const nameNode = xpath.select1('/ontology/name', this.doc) as Node;
     const nameElem = node2elem(nameNode);
     nameElem.textContent = name;
@@ -145,6 +152,7 @@ class DISOntology {
 
   public setAtom(atom: DISSetType.Atom): void {
     this.verifyInit();
+    this.checkNameValid(atom.name);
     const atomDomainNode = xpath.select1(
       '/ontology/atomDomain',
       this.doc,
@@ -236,6 +244,7 @@ class DISOntology {
 
   public setConcept(concept: DISSetType.Concept): void {
     this.verifyInit();
+    this.checkNameValid(concept.name);
 
     let conceptNode = xpath.select1(
       `/ontology/concept[name="${concept.name}"]`,
@@ -346,6 +355,7 @@ class DISOntology {
 
   public setVirtualConcept(virtualConcept: DISSetType.VirtualConcept): void {
     this.verifyInit();
+    this.checkNameValid(virtualConcept.name);
 
     let vcNode = xpath.select1(
       `/ontology/virtualConcept[name="${virtualConcept.name}"]`,
@@ -429,6 +439,7 @@ class DISOntology {
    */
   public setRootedGraph(graph: DISSetType.Graph): void {
     this.verifyInit();
+    this.checkNameValid(graph.name);
 
     let graphNode = xpath.select1(
       `/ontology/graph[name="${graph.name}"]`,

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useOntology, useRenderDispatch, useRenderSignal } from './Ontology';
 import RGView from './components/RGView';
 import { DISGetType } from '../main/discore/type';
+import GraphEdit from './components/GraphEdit';
 
 enum Status {
   BLANK,
@@ -11,9 +12,7 @@ enum Status {
 
 function RootedGraph() {
   const [currentIdx, setCurrentIdx] = useState<number | null>(null);
-  const [currentEdge, setCurrentEdge] = useState<DISGetType.Relation | null>(
-    null,
-  );
+  const [currentEdge, setCurrentEdge] = useState<DISGetType.Edge | null>(null);
   const [status, setStatus] = useState(Status.BLANK); // ['BLANK', 'ADD', 'EDIT'
   const onto = useOntology();
   const dispatch = useRenderDispatch();
@@ -35,17 +34,6 @@ function RootedGraph() {
       ...onto.getAllVirtualConcepts().map((c) => c.name),
     ]);
   }, [onto, renderSignal]);
-
-  let graphs = onto.getAllRootedGraphs().map((g) => {
-    return <option value={g.name}>{g.name}</option>;
-  });
-
-  graphs = [
-    <option disabled selected value={undefined}>
-      Select One
-    </option>,
-    ...graphs,
-  ];
 
   const edit = (
     <tr key={-1}>
@@ -124,56 +112,11 @@ function RootedGraph() {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex flex-col w-full border-b">
-        <div className="flex flex-row justify-center items-center gap-2 w-full p-2">
-          <button
-            type="button"
-            className="btn btn-sm btn-primary"
-            onClick={() => {}}
-          >
-            +
-          </button>
-          <div className="flex flex-row flex-grow items-center justify-center gap-2">
-            <div className="text-lg">Rooted Graph</div>
-            <select
-              className="select select-bordered select-sm"
-              value={graph?.name}
-              onChange={(e) =>
-                e.target.value && setGraph(onto.getRootedGraph(e.target.value))
-              }
-            >
-              {graphs}
-            </select>
-            <div className="text-lg">Is Rooted At </div>
-            <div className="text-lg font-bold">{graph?.rootedAt}</div>
-          </div>
-          <button
-            type="button"
-            className="btn btn-sm btn-error"
-            onClick={() => {}}
-          >
-            ×
-          </button>
-        </div>
-        <div className="flex flex-row gap-2 p-2 w-full items-center">
-          <div>Description</div>
-          <input className="border flex-grow" disabled value="test" />
-          <button type="button" className="btn btn-sm btn-circle btn-success">√</button>
-        </div>
-      </div>
+      <GraphEdit graph={graph} setGraph={setGraph} onto={onto} />
 
       <div className="flex flex-row h-full w-full">
         <div className="flex flex-col justify-center items-center w-1/2 h-full border-r">
           <div className="flex flex-col overflow-y-auto w-full h-1/2 border-b">
-            {/* <TabList
-            tabs={['edge', 'virtual concept']}
-            activeTab={tag}
-            onTabClick={(tab) => {
-              setTag(tab);
-              setCurrent(null);
-              setStatus(Status.BLANK);
-            }}
-          /> */}
             <div className="grow">
               <form
                 onSubmit={(e) => {
