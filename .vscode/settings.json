@@ -26,5 +26,16 @@
     "test/**/__snapshots__": true,
     "package-lock.json": true,
     "*.{css,sass,scss}.d.ts": true
+  },
+  "antlr4.generation": {
+    "mode": "external",
+    "language": "TypeScript",
+    "listeners": false,
+    "visitors": true
+  },
+  "antlr4.debug": {
+
+    "visualParseTreeHorizontal": true,
+    "visualParseTreeClustered": false
   }
 }
