@@ -98,6 +98,7 @@
   "dependencies": {
     "@xmldom/xmldom": "^0.8.10",
     "antlr4ng": "^3.0.4",
+    "data-forge": "^1.10.2",
     "electron-debug": "^3.2.0",
     "electron-log": "^4.4.8",
     "electron-updater": "^6.1.4",
