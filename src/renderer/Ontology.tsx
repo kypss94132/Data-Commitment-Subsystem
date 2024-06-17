@@ -1,3 +1,11 @@
+/**
+ * Ontology context
+ * This is the context for the ontology.
+ * All the ontology data is stored here.
+ * We use a UUID to signal the render.
+ * When the ontology data is changed, we need to signal the render to rerender.
+ */
+
 import {
   Dispatch,
   ReactNode,
@@ -152,18 +160,34 @@ const RenderDispatchContext = createContext<Dispatch<RenderAction>>(
   {} as Dispatch<RenderAction>,
 );
 
+/**
+ * Get the render signal.
+ */
 export function useRenderSignal() {
   return useContext(RenderSignalContext);
 }
 
+/**
+ * Get the ontology.
+ * @returns The ontology.
+ */
 export function useOntology() {
   return useContext(OntologyContext);
 }
 
+/**
+ * The signal actually is a UUID.
+ * When you need to rerender, you need to use this API to generate a new UUID.
+ * @returns render dispatch
+ */
 export function useRenderDispatch() {
   return useContext(RenderDispatchContext);
 }
 
+/**
+ * Get the ontology dispatch.
+ * @returns The ontology dispatch.
+ */
 export function useOntologyDispatch() {
   return useContext(OntologyDispatchContext);
 }

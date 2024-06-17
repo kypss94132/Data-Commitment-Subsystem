@@ -197,6 +197,10 @@ class DISOntology {
     };
   }
 
+  /**
+   * Get all atoms in the ontology.
+   * @returns all atoms in the ontology
+   */
   public getAllAtoms(): DISGetType.Atom[] {
     this.verifyInit();
     const atomNodes = xpath.select(
@@ -216,6 +220,11 @@ class DISOntology {
     });
   }
 
+  /**
+   * Check whether an atom exists in the ontology.
+   * @param name the name of the atom to check
+   * @returns true if the atom exists, false otherwise
+   */
   public hasAtom(name: string): boolean {
     const atomNode = xpath.select1(
       `/ontology/atomDomain/atom[name="${name}"]`,
@@ -226,6 +235,7 @@ class DISOntology {
 
   /**
    * Remove an atom from the ontology's atom domain.
+   * Noticed: All concepts and rooted graphs related to this atom will be removed.
    * @param name the name of the atom to remove
    */
   public removeAtom(name: string): void {
@@ -239,9 +249,37 @@ class DISOntology {
       atomNode.parentNode!.removeChild(atomNode);
     }
 
-    // TODO: how to remove all concepts related to this atom?
+    const concepts = this.getAllConcepts();
+    concepts.forEach((concept) => {
+      if (concept.latticeOfConcepts.includes(name)) {
+        this.removeConcept(concept.name);
+
+        let graphs = this.getAllRootedGraphs();
+        graphs.forEach((graph) => {
+          if (graph.rootedAt === concept.name) {
+            this.removeRootedGraph(graph.name);
+          } else if (graph.rootedAt === name) {
+            this.removeRootedGraph(graph.name);
+          }
+        });
+        graphs = this.getAllRootedGraphs();
+        graphs.forEach((graph) => {
+          this.getAllRelations(graph.name).forEach((edge) => {
+            if (edge.from === concept.name || edge.to === concept.name) {
+              this.removeRelation(edge, graph.name);
+            } else if (edge.from === name || edge.to === name) {
+              this.removeRelation(edge, graph.name);
+            }
+          });
+        });
+      }
+    });
   }
 
+  /**
+   * Set a concept in the ontology.
+   * @param concept the concept to set
+   */
   public setConcept(concept: DISSetType.Concept): void {
     this.verifyInit();
     this.checkNameValid(concept.name);
@@ -276,6 +314,11 @@ class DISOntology {
     );
   }
 
+  /**
+   * Get a concept from the ontology.
+   * @param name the name of the concept to get
+   * @returns the concept with the name, or null if not found
+   */
   public getConcept(name: string): DISGetType.Concept | null {
     this.verifyInit();
 
@@ -308,6 +351,10 @@ class DISOntology {
     };
   }
 
+  /**
+   * Get all concepts in the ontology.
+   * @returns all concepts in the ontology
+   */
   public getAllConcepts(): DISGetType.Concept[] {
     this.verifyInit();
 
@@ -338,6 +385,11 @@ class DISOntology {
     });
   }
 
+  /**
+   * Remove a concept from the ontology.
+   * Noticed: All rooted graphs and relations related to this concept will be removed.
+   * @param name the name of the concept to remove
+   */
   public removeConcept(name: string): void {
     this.verifyInit();
 
@@ -350,9 +402,27 @@ class DISOntology {
       conceptNode.parentNode!.removeChild(conceptNode);
     }
 
-    // TODO: how to remove all relation related to this concept?
+    let graphs = this.getAllRootedGraphs();
+    graphs.forEach((graph) => {
+      if (graph.rootedAt === name) {
+        this.removeRootedGraph(graph.name);
+      }
+    });
+
+    graphs = this.getAllRootedGraphs();
+    graphs.forEach((graph) => {
+      this.getAllRelations(graph.name).forEach((edge) => {
+        if (edge.from === name || edge.to === name) {
+          this.removeRelation(edge, graph.name);
+        }
+      });
+    });
   }
 
+  /**
+   * Set a virtual concept in the ontology.
+   * @param virtualConcept the virtual concept to set
+   */
   public setVirtualConcept(virtualConcept: DISSetType.VirtualConcept): void {
     this.verifyInit();
     this.checkNameValid(virtualConcept.name);
@@ -375,6 +445,11 @@ class DISOntology {
     setItem(vcElem, 'description', virtualConcept.description);
   }
 
+  /**
+   * Get a virtual concept from the ontology.
+   * @param name the name of the virtual concept to get
+   * @returns the virtual concept with the name, or null if not found
+   */
   public getVirtualConcept(name: string): DISGetType.VirtualConcept | null {
     this.verifyInit();
     const vcNode = xpath.select1(
@@ -398,6 +473,10 @@ class DISOntology {
     };
   }
 
+  /**
+   * Remove a virtual concept from the ontology.
+   * @param name the name of the virtual concept to remove
+   */
   public removeVirtualConcept(name: string): void {
     this.verifyInit();
 
@@ -411,6 +490,10 @@ class DISOntology {
     }
   }
 
+  /**
+   * Get all virtual concepts in the ontology.
+   * @returns all virtual concepts in the ontology
+   */
   public getAllVirtualConcepts(): DISGetType.VirtualConcept[] {
     this.verifyInit();
 
@@ -473,6 +556,11 @@ class DISOntology {
     setItem(graphElem, 'rootedAt', graph.rootedAt);
   }
 
+  /**
+   * Get a rooted graph from the ontology.
+   * @param name the name of the rooted graph to get
+   * @returns the rooted graph with the name, or null if not found
+   */
   public getRootedGraph(name: string): DISGetType.Graph | null {
     this.verifyInit();
 
@@ -498,6 +586,10 @@ class DISOntology {
     };
   }
 
+  /**
+   * Get all rooted graphs in the ontology.
+   * @returns all rooted graphs in the ontology
+   */
   public getAllRootedGraphs(): DISGetType.Graph[] {
     this.verifyInit();
 
@@ -519,6 +611,10 @@ class DISOntology {
     });
   }
 
+  /**
+   * Remove a rooted graph from the ontology.
+   * @param name the name of the rooted graph to remove
+   */
   public removeRootedGraph(name: string): void {
     this.verifyInit();
 
@@ -532,6 +628,10 @@ class DISOntology {
     }
   }
 
+  /**
+   * check whether a node in edge is valid or not
+   * @param nodeName the name of the edge node
+   */
   private checkEdgeNode(nodeName: string) {
     const n1 = xpath.select1(
       `/ontology/atomDomain/atom[name="${nodeName}"]`,
@@ -555,6 +655,11 @@ class DISOntology {
     }
   }
 
+  /**
+   * Set a relation in a rooted graph.
+   * @param edge the edge to set
+   * @param graphName the name of the rooted graph
+   */
   public setRelation(edge: DISSetType.Edge, graphName: string): void {
     this.verifyInit();
     const graphNode = xpath.select1(
@@ -588,6 +693,12 @@ class DISOntology {
     setItem(edgeElem, 'predicate', edge.predicate);
   }
 
+  /**
+   * Get a relation from a rooted graph.
+   * @param edge the edge to get
+   * @param graphName the name of the rooted graph
+   * @returns the edge with the relation, or null if not found
+   */
   public getRelation(
     edge: DISGetType.Edge,
     graphName: string,
@@ -625,6 +736,11 @@ class DISOntology {
     };
   }
 
+  /**
+   * Remove a relation from a rooted graph.
+   * @param edge the edge to remove
+   * @param graphName the name of the rooted graph
+   */
   public removeRelation(edge: DISSetType.Edge, graphName: string) {
     const relationNode = xpath.select1(
       `/ontology/graph[name="${graphName}"]/edge[from="${edge.from}" and to="${edge.to}" and @relation="${edge.relation}"]`,
@@ -636,6 +752,11 @@ class DISOntology {
     }
   }
 
+  /**
+   * Get all relations in a rooted graph.
+   * @param graphName the name of the rooted graph
+   * @returns all relations in the rooted graph
+   */
   public getAllRelations(graphName: string): DISGetType.Edge[] {
     this.verifyInit();
     const graphNode = xpath.select1(
