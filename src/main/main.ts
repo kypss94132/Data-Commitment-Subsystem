@@ -18,6 +18,7 @@ import installExtension, {
 import * as fs from 'node:fs/promises';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+import { ConsoleErrorListener } from 'antlr4ng';
 
 class AppUpdater {
   constructor() {
@@ -45,6 +46,21 @@ ipcMain.on('fileContent', async (event, action, filePath, fileContent) => {
       event.reply('file', 'save', 'error', error);
     }
   }
+});
+
+ipcMain.handle('fileContent', async (event, action, filePath) => {
+  console.log('fileContent:', action, filePath);
+  if (action === 'open') {
+    try {
+      const content = await fs.readFile(filePath, 'utf-8');
+      console.log(content);
+      return content;
+    } catch (error) {
+      console.error(error);
+      return undefined;
+    }
+  }
+  return undefined;
 });
 
 if (process.env.NODE_ENV === 'production') {

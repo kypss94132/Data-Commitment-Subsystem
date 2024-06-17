@@ -2,9 +2,7 @@
 import { memo, useEffect, useRef, useState } from 'react';
 import { Combination, combination } from 'js-combinatorics';
 import vis from 'vis-network';
-import { net } from 'electron';
 import { useOntology, useRenderSignal } from '../Ontology';
-import { DISGetType } from '../../main/discore/type';
 
 function isSuperset<T>(set: Set<T>, subset: Set<T>) {
   // eslint-disable-next-line no-restricted-syntax
@@ -16,9 +14,9 @@ function isSuperset<T>(set: Set<T>, subset: Set<T>) {
   return true;
 }
 
-function arrayEqual<T>(a: T[], b: T[]): boolean {
-  return a.length === b.length && a.every((v, i) => v === b[i]);
-}
+// function arrayEqual<T>(a: T[], b: T[]): boolean {
+//   return a.length === b.length && a.every((v, i) => v === b[i]);
+// }
 
 function generateGraph(
   atoms: string[],

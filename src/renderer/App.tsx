@@ -12,6 +12,7 @@ import BooleanLattice from './BooleanLattice';
 import RootedGraph from './RootedGraph';
 
 import { OntologyProvider, useOntology } from './Ontology';
+import Prereason from './Prereason';
 
 function Hello() {
   return (
@@ -66,6 +67,10 @@ function Navagation() {
       name: 'Rooted Graph',
       path: '/rooted-graph',
     },
+    {
+      name: 'Prereason',
+      path: '/prereason',
+    },
   ];
 
   const links = items.map((item) => (
@@ -107,6 +112,10 @@ const router = createMemoryRouter([
       {
         path: 'rooted-graph',
         element: <RootedGraph />,
+      },
+      {
+        path: 'prereason',
+        element: <Prereason />,
       },
     ],
   },

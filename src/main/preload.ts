@@ -27,12 +27,12 @@ const electronHandler = {
 contextBridge.exposeInMainWorld('electron', electronHandler);
 
 const fileHandler = {
-  on: (callback: (...arg: unknown[]) => void) => {
-    ipcRenderer.on('fileMenu', (_event, ...value) => callback(...value));
-  },
-  save: (filePath: string, fileContent: string) => {
-    ipcRenderer.send('fileContent', 'save', filePath, fileContent);
-  },
+  on: (callback: (...arg: unknown[]) => void) =>
+    ipcRenderer.on('fileMenu', (_event, ...value) => callback(...value)),
+  save: (filePath: string, fileContent: string) =>
+    ipcRenderer.send('fileContent', 'save', filePath, fileContent),
+  open: (filePath: string) =>
+    ipcRenderer.invoke('fileContent', 'open', filePath),
 };
 
 contextBridge.exposeInMainWorld('file', fileHandler);
