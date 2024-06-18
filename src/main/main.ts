@@ -37,7 +37,6 @@ ipcMain.on('ipc-example', async (event, arg) => {
 });
 
 ipcMain.on('fileContent', async (event, action, filePath, fileContent) => {
-  console.log('fileContent:', action, filePath, fileContent);
   if (action === 'save') {
     try {
       await fs.writeFile(filePath, fileContent);
@@ -49,11 +48,9 @@ ipcMain.on('fileContent', async (event, action, filePath, fileContent) => {
 });
 
 ipcMain.handle('fileContent', async (event, action, filePath) => {
-  console.log('fileContent:', action, filePath);
   if (action === 'open') {
     try {
       const content = await fs.readFile(filePath, 'utf-8');
-      console.log(content);
       return content;
     } catch (error) {
       console.error(error);
