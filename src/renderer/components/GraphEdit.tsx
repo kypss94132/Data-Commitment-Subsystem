@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { DISGetType, DISSetType } from '../../main/discore/type';
 import { useOntology } from '../Ontology';
+import { CheckIcon, PlusIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 interface Props {
   graph: DISGetType.Graph | null;
@@ -40,7 +41,7 @@ function GraphEdit({ graph, setGraph }: Props) {
             setStatus(Status.ADD);
           }}
         >
-          +
+          <PlusIcon className="size-4 stroke-[3]" />
         </button>
         <div className="flex flex-row flex-grow items-center justify-center gap-2">
           <div className="text-lg">Rooted Graph</div>
@@ -96,7 +97,7 @@ function GraphEdit({ graph, setGraph }: Props) {
             setGraph(null);
           }}
         >
-          ×
+          <XMarkIcon className="size-4 stroke-[3]" />
         </button>
       </div>
       <div className="flex flex-row gap-2 p-2 w-full items-center">
@@ -122,7 +123,7 @@ function GraphEdit({ graph, setGraph }: Props) {
             onto.setRootedGraph(graph!);
           }}
         >
-          √
+          <CheckIcon className="size-4 stroke-[3]" />
         </button>
       </div>
     </div>

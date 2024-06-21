@@ -96,6 +96,7 @@
     }
   },
   "dependencies": {
+    "@heroicons/react": "^2.1.4",
     "@xmldom/xmldom": "^0.8.10",
     "antlr4ng": "^3.0.4",
     "data-forge": "^1.10.2",

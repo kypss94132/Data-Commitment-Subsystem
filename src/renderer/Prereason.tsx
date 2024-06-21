@@ -1,6 +1,7 @@
 import { DataFrame } from 'data-forge';
 import * as dataForge from 'data-forge';
 import { useState } from 'react';
+import Mapping from './components/Mapping';
 
 export default function Prereason() {
   const [df, setDf] = useState<dataForge.DataFrame<number, any>>(
@@ -37,7 +38,7 @@ export default function Prereason() {
   );
 
   return (
-    <div className='flex flex-col h-full w-full'>
+    <div className="flex flex-col h-full w-full">
       <form
         className="flex flex-col"
         onSubmit={async (e) => {
@@ -62,6 +63,7 @@ export default function Prereason() {
         />
         <button className="btn btn-primary">Load</button>
       </form>
+      <Mapping atom="test" />
       {table}
     </div>
   );

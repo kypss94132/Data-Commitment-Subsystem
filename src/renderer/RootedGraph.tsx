@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { CheckIcon, PlusIcon, XMarkIcon } from '@heroicons/react/24/solid';
 import { useOntology, useRenderDispatch, useRenderSignal } from './Ontology';
 import RGView from './components/RGView';
 import { DISGetType } from '../main/discore/type';
@@ -39,7 +40,7 @@ function RootedGraph() {
     <tr key={-1}>
       <th>
         <button type="submit" className="btn btn-sm btn-primary">
-          √
+          <CheckIcon className="size-4 stroke-[3]" />
         </button>
       </th>
       <td>
@@ -100,7 +101,7 @@ function RootedGraph() {
               dispatch({ type: 'rerender' });
             }}
           >
-            ×
+            <XMarkIcon className="size-4 stroke-[3]" />
           </button>
         </th>
         <td>{edge.from}</td>
@@ -154,7 +155,7 @@ function RootedGraph() {
                               setStatus(Status.ADD);
                             }}
                           >
-                            +
+                            <PlusIcon className="size-4 stroke-[3]" />
                           </button>
                         ) : (
                           '#'
