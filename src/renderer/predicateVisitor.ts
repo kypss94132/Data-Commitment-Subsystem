@@ -102,7 +102,7 @@ class PredicateVisitor extends predicateVisitor<
   };
 
   public visitSamplingExp = (ctx: SamplingExpContext): object => {
-
+    todo();
   };
 
   public visititSingleCondition = (ctx: SingleConditionContext): string => {
