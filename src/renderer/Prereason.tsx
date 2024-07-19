@@ -1,9 +1,13 @@
 import { DataFrame } from 'data-forge';
 import * as dataForge from 'data-forge';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Mapping from './components/Mapping';
+import { useOntology } from './Ontology';
 
 export default function Prereason() {
+  const [hasLoad, setHasLoad] = useState(false);
+  const onto = useOntology();
+  const [mappings, setMappings] = useState<JSX.Element[]>([]);
   const [df, setDf] = useState<dataForge.DataFrame<number, any>>(
     new DataFrame(),
   );
@@ -50,8 +54,15 @@ export default function Prereason() {
 
           const fileContent = await window.file.open(file.path);
           // console.log(fileContent);
-          setDf(dataForge.fromCSV(fileContent));
-          console.log(df.getColumnNames());
+          const dfTmp = dataForge.fromCSV(fileContent);
+          setDf(dfTmp);
+          const columns = dfTmp.getColumnNames();
+
+          setMappings(
+            onto.getAllAtoms().map((atom) => {
+              return <Mapping atom={atom.name} columns={columns} />;
+            }),
+          );
         }}
       >
         <div className="label">Pick a CSV file</div>
@@ -63,7 +74,7 @@ export default function Prereason() {
         />
         <button className="btn btn-primary">Load</button>
       </form>
-      <Mapping atom="test" />
+      {mappings}
       {table}
     </div>
   );

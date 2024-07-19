@@ -14,7 +14,7 @@ exp:
     ;
 
 statExp:
-    func=ID '(' attr ')'                  # singleVarStatExp
+    func=ID '(' attr (',' num=(INT|DOUBLE))? ')'                  # singleVarStatExp
     | func=ID '(' samplingExp ',' attr ')'     # regressionStatExp
     ;
 

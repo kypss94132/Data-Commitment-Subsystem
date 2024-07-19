@@ -1,6 +1,7 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-underscore-dangle */
-import { todo } from 'node:test';
+import { DataFrame } from 'data-forge';
+import * as dataForge from 'data-forge';
 import {
   AndConditionContext,
   AndExpContext,
@@ -20,6 +21,23 @@ import {
 } from '../antlr4/predicateParser';
 import { predicateVisitor } from '../antlr4/predicateVisitor';
 
+import {
+  Difference,
+  HeadValues,
+  InterquartileRange,
+  MaximumValue,
+  Mean,
+  Median,
+  MinimumValue,
+  Mode,
+  Quantile,
+  Range,
+  StandardDeviation,
+  Sum,
+  TopValues,
+  Variance,
+} from './statisticalTerms';
+
 const opMap = new Map([
   [predicateParser.EQ, '==='],
   [predicateParser.NEQ, '!=='],
@@ -38,6 +56,19 @@ class PredicateVisitor extends predicateVisitor<
   boolean | number | object | string
 > {
   private stack: any[] = [];
+
+  private mappings: Map<string, string>;
+
+  private df: dataForge.DataFrame<number, any>;
+
+  constructor(
+    mappings: Map<string, string>,
+    df: dataForge.DataFrame<number, any>,
+  ) {
+    super();
+    this.mappings = mappings;
+    this.df = df;
+  }
 
   public visitAndExp = (ctx: AndExpContext): boolean => {
     const l = this.visit(ctx.exp(0)!)! as boolean;
@@ -93,8 +124,70 @@ class PredicateVisitor extends predicateVisitor<
     );
   };
 
-  public visitSingleVarStatExp = (ctx: SingleVarStatExpContext): boolean => {
-    todo();
+  public visitSingleVarStatExp = (ctx: SingleVarStatExpContext): number => {
+    const funcName = ctx.ID().getText();
+    const attr = this.visit(ctx.attr()!) as Attr; 
+    const column = this.mappings.get(attr.atom);
+    if (!column) {
+      throw new Error(
+        `${ctx.attr()!.start!.line}:${ctx.attr()!.start!.column} Invalid atom: ${attr.atom}`,
+      );
+    }
+
+    if (ctx.INT()) {
+      const num = this.visit(ctx.INT()!) as number;
+      switch (funcName) {
+        case 'TopValues':
+          return TopValues(this.df, column, num);
+        case 'HeadValues':
+          return HeadValues(this.df, column, num);
+        default:
+          throw new Error(
+            `${ctx.ID()!.symbol.line}:${ctx.ID()!.symbol.column} Invalid function: ${funcName}`,
+          );
+      }
+    }
+
+    if (ctx.DOUBLE()) {
+      const num = this.visit(ctx.DOUBLE()!) as number;
+      switch (funcName) {
+        case 'Quantile':
+          return Quantile(this.df, column, num);
+        default:
+          throw new Error(
+            `${ctx.ID()!.symbol.line}:${ctx.ID()!.symbol.column} Invalid function: ${funcName}`,
+          );
+      }
+    }
+
+    switch (funcName) {
+      case 'Mean':
+        return Mean(this.df, column);
+      case 'Median':
+        return Median(this.df, column);
+      case 'Mode':
+        return Mode(this.df, column);
+      case 'Range':
+        return Range(this.df, column);
+      case 'Difference':
+        return Difference(this.df, column);
+      case 'MaximumValue':
+        return MaximumValue(this.df, column);
+      case 'MinimumValue':
+        return MinimumValue(this.df, column);
+      case 'Variance':
+        return Variance(this.df, column);
+      case 'StandardDeviation':
+        return StandardDeviation(this.df, column);
+      case 'InterquarterileRange':
+        return InterquartileRange(this.df, column);
+      case 'Sum':
+        return Sum(this.df, column);
+      default:
+        throw new Error(
+          `${ctx.ID()!.symbol.line}:${ctx.ID()!.symbol.column} Invalid function: ${funcName}`,
+        );
+    }
   };
 
   public visitRegressionStatExp = (ctx: RegressionStatExpContext): object => {
@@ -139,5 +232,3 @@ class PredicateVisitor extends predicateVisitor<
     };
   };
 }
-
-export default PredicateVisitor;
