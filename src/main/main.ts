@@ -9,7 +9,7 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, dialog } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import installExtension, {
@@ -19,6 +19,8 @@ import * as fs from 'node:fs/promises';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 import { ConsoleErrorListener } from 'antlr4ng';
+
+import {exec} from 'child_process';
 
 class AppUpdater {
   constructor() {
@@ -58,6 +60,43 @@ ipcMain.handle('fileContent', async (event, action, filePath) => {
     }
   }
   return undefined;
+});
+
+// To run parser.bat file
+
+ipcMain.handle('select-bat-file', async () => {
+  const result = await dialog.showOpenDialog({
+    title: 'Select a Batch File',
+    properties: ['openFile'], // Only allow files
+    filters: [{ name: 'Batch Files', extensions: ['bat'] }], // Only show .bat files
+  });
+
+  if (result.canceled || !result.filePaths.length) {
+    return { canceled: true, filePath: null }; // No file selected
+  }
+
+  return { canceled: false, filePath: result.filePaths[0] }; // Return the selected file
+});
+
+ipcMain.on('run-bat-file', (event, batFilePath) => {
+  console.log(`RUN BAT File event triggered with file: ${batFilePath}`);
+
+  exec(`cmd.exe /c "${batFilePath}"`, (error, stdout, stderr) => {
+    if (error) {
+      console.error(`Execution error: ${error.message}`);
+      event.reply('bat-file-response', `Error: ${error.message}`);
+      return;
+    }
+
+    if (stderr) {
+      console.error(`Batch file stderr: ${stderr}`);
+      event.reply('bat-file-response', `stderr: ${stderr}`);
+      return;
+    }
+
+    console.log(`Batch file stdout: ${stdout}`);
+    event.reply('bat-file-response', stdout || 'Batch file executed successfully.');
+  });
 });
 
 if (process.env.NODE_ENV === 'production') {

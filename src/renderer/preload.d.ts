@@ -5,7 +5,14 @@ declare global {
   interface Window {
     electron: ElectronHandler;
     file: FileHandler;
+    // for parser
+    electronAPI: {
+      selectBatFile: () => Promise<{ canceled: boolean; filePath: string | null }>;
+      runBatFile: (filePath: string) => void;
+      onBatFileResponse: (callback: (message: string) => void) => void;
+  };
   }
+
 }
 
 export {};

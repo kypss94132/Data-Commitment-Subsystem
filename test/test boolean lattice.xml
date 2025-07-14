@@ -1,0 +1,87 @@
+<ontology>
+    <name/>
+    <atomDomain>
+        <atom>
+            <name>Rainfall</name>
+        </atom>
+        <atom>
+            <name>MinTemp</name>
+        </atom>
+        <atom>
+            <name>MaxTemp</name>
+        </atom>
+        <atom>
+            <name>Humidity</name>
+        </atom>
+        <atom>
+            <name>Sunshine</name>
+        </atom>
+    </atomDomain>
+    <virtualConcept>
+        <name>vc1</name>
+        <description>This is vc1</description>
+    </virtualConcept>
+    <virtualConcept>
+        <name>vc2</name>
+        <description>This is vc2</description>
+    </virtualConcept>
+    <virtualConcept>
+        <name>vc3</name>
+        <description>This is vc3</description>
+    </virtualConcept>
+    <virtualConcept>
+        <name>vc4</name>
+        <description>This is vc4</description>
+    </virtualConcept>
+    <concept>
+        <name>Moisture</name>
+        <latticeOfConcepts>
+            <atom>Rainfall</atom>
+            <atom>Humidity</atom>
+        </latticeOfConcepts>
+    </concept>
+    <concept>
+        <name>Temp</name>
+        <latticeOfConcepts>
+            <atom>MinTemp</atom>
+            <atom>MaxTemp</atom>
+        </latticeOfConcepts>
+    </concept>
+    <concept>
+        <name>Hotday</name>
+        <latticeOfConcepts>
+            <atom>MaxTemp</atom>
+            <atom>Sunshine</atom>
+        </latticeOfConcepts>
+    </concept>
+    <concept>
+        <name>Weather</name>
+        <latticeOfConcepts>
+            <atom>Rainfall</atom>
+            <atom>MinTemp</atom>
+            <atom>MaxTemp</atom>
+            <atom>Humidity</atom>
+            <atom>Sunshine</atom>
+        </latticeOfConcepts>
+    </concept>
+    <concept>
+        <name>Windy</name>
+        <latticeOfConcepts>
+            <atom>MinTemp</atom>
+            <atom>MaxTemp</atom>
+            <atom>Humidity</atom>
+        </latticeOfConcepts>
+    </concept>
+    <concept>
+        <name>Sunny</name>
+        <latticeOfConcepts>
+            <atom>MinTemp</atom>
+            <atom>MaxTemp</atom>
+            <atom>Humidity</atom>
+            <atom>Sunshine</atom>
+        </latticeOfConcepts>
+    </concept>
+    <graph>
+        <name>Sunny Day</name>
+    </graph>
+</ontology>

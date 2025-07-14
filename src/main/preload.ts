@@ -39,3 +39,23 @@ contextBridge.exposeInMainWorld('file', fileHandler);
 
 export type ElectronHandler = typeof electronHandler;
 export type FileHandler = typeof fileHandler;
+
+// to execute parser.bat
+// Define the type for the result passed to the callback
+
+contextBridge.exposeInMainWorld('electronAPI', {
+  selectBatFile: async () => {
+    const result = await ipcRenderer.invoke('select-bat-file'); // Use `ipcRenderer.invoke` for async calls
+    console.log('Selected file:', result);
+    return result;
+  },
+  runBatFile: (filePath: string) => {
+    console.log('Sending run-bat-file IPC event with file:', filePath);
+    ipcRenderer.send('run-bat-file', filePath);
+  },
+  onBatFileResponse: (callback: (message: string) => void) =>
+    ipcRenderer.on('bat-file-response', (event, message) => {
+      console.log('Received response from main process:', message);
+      callback(message);
+    }),
+});

@@ -14,6 +14,8 @@ import RootedGraph from './RootedGraph';
 import { OntologyProvider, useOntology } from './Ontology';
 import Prereason from './Prereason';
 
+import DataCommitment from './DataCommitment';
+
 function Hello() {
   return (
     <div>
@@ -71,6 +73,10 @@ function Navagation() {
       name: 'Prereason',
       path: '/prereason',
     },
+    {
+      name: 'DataCommitment',
+      path: '/datacommitment',
+    },
   ];
 
   const links = items.map((item) => (
@@ -116,6 +122,10 @@ const router = createMemoryRouter([
       {
         path: 'prereason',
         element: <Prereason />,
+      },
+      {
+        path: 'datacommitment',
+        element: <DataCommitment />,
       },
     ],
   },

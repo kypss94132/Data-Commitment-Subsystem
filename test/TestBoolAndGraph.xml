@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ontology>
+    <include>
+        <name>OntologyExample</name>
+        <filePath>OntologyExample.xml</filePath>
+    </include>
+    <name>weather</name>
+    <atomDomain>
+        <atom>
+            <name>MinTemp</name>
+            <description>The minimum temperature of the day</description>
+        </atom>
+        <atom>
+            <name>MaxTemp</name>
+            <description>The maximum temperature of the day</description>
+        </atom>
+        <atom>
+            <name>Rainfall</name>
+            <description>The rainfall index of the day</description>
+        </atom>
+        <atom>
+            <name>Sunshine</name>
+            <description>The rainfall index of the day</description>
+        </atom>
+        <atom>
+            <name>Humidity</name>
+            <description>The humidity percent of the day</description>
+        </atom>
+        <atom>
+            <name>Seasons</name>
+        </atom>
+    </atomDomain>
+    <concept>
+        <name>Temp</name>
+        <latticeOfConcepts>
+            <atom>MinTemp</atom>
+            <atom>MaxTemp</atom>
+        </latticeOfConcepts>
+    </concept>
+    <concept>
+        <name>Moisture</name>
+        <latticeOfConcepts>
+            <atoms>Rainfall Humidity</atoms>
+        </latticeOfConcepts>
+    </concept>
+    <concept>
+        <name>Sunny</name>
+        <latticeOfConcepts>
+            <atom>MinTemp</atom>
+            <atom>MaxTemp</atom>
+            <atom>Sunshine</atom>
+            <atom>Rainfall</atom>
+        </latticeOfConcepts>
+    </concept>
+    <concept>
+        <name>Windy</name>
+        <latticeOfConcepts>
+            <concept>Moisture</concept>
+            <atom>Sunshine</atom>
+        </latticeOfConcepts>
+    </concept>
+    <concept>
+        <name>Hotday</name>
+        <latticeOfConcepts>
+            <atom>Sunshine</atom>
+            <atom>MaxTemp</atom>
+        </latticeOfConcepts>
+        <defination><![CDATA[
+            MaxTemp >= 20 \and Sunshine >= 8
+            ]]></defination>
+    </concept>
+    <concept>
+        <name>Weather</name>
+        <latticeOfConcepts>
+            <atom>MinTemp</atom>
+            <atom>MaxTemp</atom>
+            <atom>Rainfall</atom>
+            <atom>Sunshine</atom>
+            <atom>Humidity</atom>
+        </latticeOfConcepts>
+    </concept>
+    <virtualConcept>
+        <name>Winter</name>
+    </virtualConcept>
+    <virtualConcept>
+        <name>Spring</name>
+    </virtualConcept>
+    <graph>
+        <name>Seasons</name>
+    </graph>
+    <graph>
+        <name>Weather graph</name>
+        <rootedAt>Weather</rootedAt>
+        <edge relation="AssociatedTo">
+            <from>Seasons</from>
+            <to>Weather</to>
+        </edge>
+        <edge relation="is-a">
+            <from>Winter</from>
+            <to>Seasons</to>
+        </edge>
+        <edge relation="is-a">
+            <from>Spring</from>
+            <to>Seasons</to>
+        </edge>
+        <edge relation="is-a">
+            <from>Fall</from>
+            <to>Seasons</to>
+        </edge>
+        <edge relation="is-a">
+            <from>Summer</from>
+            <to>Seasons</to>
+        </edge>
+    </graph>
+    <virtualConcept>
+        <name>Fall</name>
+    </virtualConcept>
+    <virtualConcept>
+        <name>Summer</name>
+    </virtualConcept>
+</ontology>
