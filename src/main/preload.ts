@@ -1,5 +1,3 @@
-// Disable no-unused-vars, broken for spread args
-/* eslint no-unused-vars: off */
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 
 export type Channels = 'ipc-example';
@@ -40,22 +38,38 @@ contextBridge.exposeInMainWorld('file', fileHandler);
 export type ElectronHandler = typeof electronHandler;
 export type FileHandler = typeof fileHandler;
 
-// to execute parser.bat
-// Define the type for the result passed to the callback
-
+// Define the extended electronAPI for selecting and executing batch files
 contextBridge.exposeInMainWorld('electronAPI', {
+  // Select the BAT file
   selectBatFile: async () => {
-    const result = await ipcRenderer.invoke('select-bat-file'); // Use `ipcRenderer.invoke` for async calls
-    console.log('Selected file:', result);
+    const result = await ipcRenderer.invoke('select-bat-file');
     return result;
   },
+
+  // Run BAT file without arguments (legacy method)
   runBatFile: (filePath: string) => {
-    console.log('Sending run-bat-file IPC event with file:', filePath);
     ipcRenderer.send('run-bat-file', filePath);
   },
+
+  // Listen for response from the main process after BAT file runs
   onBatFileResponse: (callback: (message: string) => void) =>
     ipcRenderer.on('bat-file-response', (event, message) => {
-      console.log('Received response from main process:', message);
       callback(message);
     }),
+
+  // NEW: Select input XML file
+  selectInputFile: async () => {
+    return await ipcRenderer.invoke('select-input-file');
+  },
+
+  // NEW: Select output TXT file
+  selectOutputFile: async () => {
+    return await ipcRenderer.invoke('select-output-file');
+  },
+
+  // NEW: Run BAT file with input and output arguments
+  runBatWithArgs: async (data: { batPath: string; inputPath: string; outputPath: string }) => {
+    return await ipcRenderer.invoke('run-bat-with-args', data);
+  },
 });
+
