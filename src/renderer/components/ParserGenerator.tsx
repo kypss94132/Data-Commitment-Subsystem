@@ -91,16 +91,16 @@ const Test1Content: React.FC = () => {
   return (
     <div style={{ padding: '30px', maxWidth: '700px', margin: '0 auto', fontFamily: 'sans-serif' }}>
       
-      <div><strong>Step 1: Select XML Input File</strong></div>
+      <div><strong>Step 1: Input Ontology XML File</strong></div>
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px' }}>
-        <button style={outlineBlueButton} onClick={handleSelectInputFile}>Browse XML File</button>
+        <button style={outlineBlueButton} onClick={handleSelectInputFile}>Select XML File</button>
         <div style={{ marginLeft:'150px', marginTop: '20px', fontSize: '0.85em', color: '#666' }}>
           {inputFile || 'No file selected'}
         </div>
       </div>
       <hr style={{ margin: '20px 0' }} />
   
-      <div><strong>Step 2: Choose Output File Path</strong></div>
+      <div><strong>Step 2: Set Output Token File Name and Path</strong></div>
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px' }}>
         <button style={outlineBlueButton} onClick={handleSelectOutputFile}>Set Output File</button>
         <div style={{ marginLeft:'150px', marginTop: '20px', fontSize: '0.85em', color: '#666' }}>
@@ -109,16 +109,16 @@ const Test1Content: React.FC = () => {
       </div>
       <hr style={{ margin: '20px 0' }} />
   
-      <div><strong>Step 3: Select Batch Script (.bat)</strong></div>
+      <div><strong>Step 3: Select BAT File to Generate Parser</strong></div>
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px' }}>
-        <button style={outlineBlueButton} onClick={handleSelectBatFile}>Browse .BAT File</button>
+        <button style={outlineBlueButton} onClick={handleSelectBatFile}>Select BAT File</button>
         <div style={{ marginLeft:'150px', marginTop: '20px', fontSize: '0.85em', color: '#666' }}>
           {batScriptPath || 'No file selected'}
         </div>
       </div>
       <hr style={{ margin: '20px 0' }} />
   
-      <div><strong>Step 4: Run Batch File to Generate Parser & Tokens</strong></div>
+      <div><strong>Step 4: Generate Parser and Output Token File</strong></div>
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px' }}>
         <button
           onClick={handleRunBat}
@@ -129,7 +129,7 @@ const Test1Content: React.FC = () => {
             cursor: !inputFile || !outputFile || !batScriptPath ? 'not-allowed' : 'pointer',
           }}
         >
-          Run Batch File
+          Run BAT File
         </button>
       </div>
       <hr style={{ margin: '20px 0' }} />
@@ -137,7 +137,7 @@ const Test1Content: React.FC = () => {
       <div><strong>Step 5: Save Token File to Database</strong></div>
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px' }}>
         <button onClick={handleSaveToken} style={greenButton}>
-          Upload to Database
+          Save to Database
         </button>
       </div>
     </div>

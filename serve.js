@@ -1,3 +1,4 @@
+/*
 const express = require('express');
 const fs = require('fs');
 const mysql = require('mysql2');
@@ -138,15 +139,12 @@ function extractPredicateParts(extractedContent) {
 app.post('/extract-predicate', (req, res) => {
   const selectQuery = 'SELECT Id, Text, Type FROM tokens ORDER BY Id';
   const insertQuery = `
-    INSERT INTO predicate (StartTokenID, EndTokenID, Disjunction, Conjunction, LeftOperand, Operator, RightOperand, RawText) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?) 
+    INSERT INTO predicate (StartTokenID, EndTokenID, PredicateText) 
+    VALUES (?, ?, ?) 
     ON DUPLICATE KEY UPDATE 
       StartTokenID = VALUES(StartTokenID), 
       EndTokenID = VALUES(EndTokenID),
-      LeftOperand = VALUES(LeftOperand), 
-      Operator = VALUES(Operator), 
-      RightOperand = VALUES(RightOperand), 
-      RawText = VALUES(RawText)
+      PredicateText = VALUES(PredicateText)
   `;
 
   connection.query(selectQuery, (err, results) => {
@@ -191,16 +189,10 @@ app.post('/extract-predicate', (req, res) => {
           endTokenId = results[i + 3].Id; // End token ID of ">"
 
           let finalContent = extractContent(extractedContent);
-          let { leftOperand, operator, rightOperand } = extractPredicateParts(finalContent);
-
-          // Ensure missing values are replaced with NULL or default values
-          leftOperand = leftOperand || null;
-          operator = operator || null;
-          rightOperand = rightOperand || null;
 
           // ** Pass `0` for Disjunction and Conjunction **
           const insertPromise = new Promise((resolve, reject) => {
-            connection.query(insertQuery, [startTokenId, endTokenId, 0, 0, leftOperand, operator, rightOperand, finalContent], (err) => {
+            connection.query(insertQuery, [startTokenId, endTokenId, finalContent], (err) => {
               if (err) {
                 console.error('Error inserting predicate:', err);
                 reject(err);
@@ -235,41 +227,186 @@ app.post('/extract-predicate', (req, res) => {
 });
 
 // For DataExtractor, API to copy PredicateID from predicate to verification_data
-app.post('/copy-predicateID', (req, res) => {
-  // Query to fetch all PredicateIDs from the predicate table
-  const selectQuery = 'SELECT PredicateID FROM predicate';
-
-  // Query to insert PredicateID into verification_data table
-  const insertQuery = 'INSERT INTO verification_data (PredicateID) VALUES (?)';
+app.post('/split-predicate', (req, res) => {
+  const selectQuery = 'SELECT PredicateID, PredicateText FROM predicate';
+  const insertQuery = `
+    INSERT INTO verification_data (PredicateID, RawText, ConnectOperator)
+    VALUES (?, ?, ?)
+  `;
 
   connection.query(selectQuery, (err, results) => {
     if (err) {
-      console.error('Error fetching PredicateID from predicate:', err);
-      return res.status(500).json({ error: 'Error fetching PredicateID from predicate table' });
+      console.error('Error fetching predicates:', err);
+      return res.status(500).json({ error: 'Error fetching predicates' });
     }
 
-    if (results.length === 0) {
-      return res.status(400).json({ error: 'No PredicateIDs found in predicate table' });
-    }
+    const insertPromises = [];
 
-    let insertCount = 0;
-
-    // Loop through each PredicateID and insert into verification_data table
     results.forEach(row => {
-      connection.query(insertQuery, [row.PredicateID], (err) => {
-        if (err) {
-          console.error('Error inserting PredicateID into verification_data:', err);
-        } else {
-          insertCount++;
-        }
+      const { PredicateID, PredicateText } = row;
+
+      let operator = null;
+      let subPredicates = [PredicateText];
+
+      if (PredicateText.includes('AND')) {
+        operator = 'AND';
+        subPredicates = PredicateText.split('AND');
+      } else if (PredicateText.includes('OR')) {
+        operator = 'OR';
+        subPredicates = PredicateText.split('OR');
+      }
+
+      subPredicates.forEach((sub, index) => {
+        const trimmedSub = sub.trim();
+        const op = (index === 0 && operator) ? operator : null;
+
+        insertPromises.push(
+          new Promise((resolve, reject) => {
+            connection.query(insertQuery, [PredicateID, trimmedSub, op], (err) => {
+              if (err) return reject(err);
+              resolve();
+            });
+          })
+        );
       });
     });
 
-    res.json({ message: `${insertCount} PredicateIDs copied to verification_data table.` });
+    Promise.all(insertPromises)
+      .then(() => res.json({ message: 'Verification data inserted successfully.' }))
+      .catch(err => {
+        console.error('Error inserting verification data:', err);
+        res.status(500).json({ error: 'Insertion failed' });
+      });
+  });
+});
+//Parses verification_data.RawText, Queries the corresponding source table (player) saved in SourceData, Computes the expression, save true false for each expression
+app.post('/calculate-verification', (req, res) => {
+  const selectQuery = `
+    SELECT ID, PredicateID, RawText, SourceData 
+    FROM verification_data 
+    WHERE RawText IS NOT NULL AND SourceData IS NOT NULL
+  `;
+
+  const updateQuery = `
+    UPDATE verification_data 
+    SET CalculatedResult = ? 
+    WHERE ID = ?
+  `;
+
+  connection.query(selectQuery, async (err, rows) => {
+    if (err) {
+      console.error('Error fetching verification data:', err);
+      return res.status(500).json({ error: 'Error fetching verification data' });
+    }
+
+    const promises = rows.map(row => {
+      const { ID, RawText, SourceData } = row;
+
+      try {
+        // Extract expression, operator, value
+        const match = RawText.match(/\(?([A-Za-z0-9_]+)\/([A-Za-z0-9_]+)\)?\s*([=><!]+)\s*(\d*\.?\d+)/);
+        if (!match) {
+          throw new Error(`Invalid format in RawText: ${RawText}`);
+        }
+
+        const [_, numerator, denominator, operator, targetValueStr] = match;
+        const targetValue = parseFloat(targetValueStr);
+
+        const sourceTable = SourceData;
+
+        // Construct SQL query to get numerator and denominator
+        const valueQuery = `
+          SELECT \`${numerator}\` AS num, \`${denominator}\` AS denom 
+          FROM \`${sourceTable}\` 
+          WHERE \`${numerator}\` IS NOT NULL AND \`${denominator}\` IS NOT NULL AND \`${denominator}\` != 0
+        `;
+
+        return new Promise((resolve, reject) => {
+          connection.query(valueQuery, (err, results) => {
+            if (err) {
+              console.error(`Error querying source table ${sourceTable}:`, err);
+              return reject(err);
+            }
+
+            let matchFound = false;
+
+            for (const row of results) {
+              const computed = row.num / row.denom;
+
+              switch (operator) {
+                case '=':
+                case '==':
+                  matchFound = computed === targetValue;
+                  break;
+                case '>':
+                  matchFound = computed > targetValue;
+                  break;
+                case '<':
+                  matchFound = computed < targetValue;
+                  break;
+                case '>=':
+                  matchFound = computed >= targetValue;
+                  break;
+                case '<=':
+                  matchFound = computed <= targetValue;
+                  break;
+                case '!=':
+                case '<>':
+                  matchFound = computed !== targetValue;
+                  break;
+              }
+
+              if (matchFound) break; // Only need one match
+            }
+
+            const finalResult = matchFound ? 'True' : 'False';
+
+            connection.query(updateQuery, [finalResult, ID], (err) => {
+              if (err) {
+                console.error('Error updating CalculatedResult:', err);
+                return reject(err);
+              }
+              resolve();
+            });
+          });
+        });
+      } catch (err) {
+        console.error(`Parsing error for ID ${ID}:`, err);
+        return Promise.resolve(); // Skip and continue with others
+      }
+    });
+
+    Promise.all(promises)
+      .then(() => {
+        res.json({ message: 'Verification results calculated and saved.' });
+      })
+      .catch(err => {
+        res.status(500).json({ error: 'Error during calculation' });
+      });
   });
 });
 
 // Start the server
+app.listen(port, () => {
+  console.log(`Server running on http://localhost:${port}`);
+});
+*/
+// serve.js
+const express = require('express');
+const cors = require('cors');
+
+const app = express();
+const port = 5000;
+
+app.use(cors());
+app.use(express.json());
+
+// Register routes
+require('./routes/readToken')(app);
+require('./routes/extractPredicate')(app);
+require('./routes/splitPredicate')(app);
+//require('./routes/calculateVerification')(app);
+
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });

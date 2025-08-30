@@ -20,7 +20,23 @@ const DataExtractor: React.FC = () => {
       setResponseMessage(`Error: ${error.message}`);
     }
   };
+  const handleVerify = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/calculate-verification', {
+        method: 'POST',
+      });
 
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      setResponseMessage(`Success: ${result.message}`);
+    } catch (error) {
+      console.error('Error Verify:', error);
+      setResponseMessage(`Error: ${error.message}`);
+    }
+  };
   const baseButtonStyle = {
     padding: '8px 16px',
     border: 'none',
@@ -37,12 +53,12 @@ const DataExtractor: React.FC = () => {
 
   return (
     <div>
-      <div><strong>Extract Data from Predicate Table for verification and Save to Database</strong></div>
+      <div><strong>Start verification</strong></div>
       <div style={{ display: 'flex', alignItems: 'center', marginTop: '20px' }}>
-        <button onClick={handleExtractData} style={blueButton}>
+        <button onClick={handleVerify} style={blueButton}>
           Save Data to Database
         </button>
-      </div> 
+      </div>
     </div>
   );
 };
