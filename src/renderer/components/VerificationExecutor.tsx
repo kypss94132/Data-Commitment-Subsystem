@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 
-const DataExtractor: React.FC = () => {
+const VerificationExecutor: React.FC = () => {
   const [responseMessage, setResponseMessage] = useState<string>('');
 
-  const handleExtractData = async () => {
+  const handleCalResult = async () => {
     try {
-      const response = await fetch('http://localhost:5000/split-predicate', {
+      const response = await fetch('http://localhost:5000/calculate-result', {
         method: 'POST',
       });
 
@@ -20,23 +20,27 @@ const DataExtractor: React.FC = () => {
       setResponseMessage(`Error: ${error.message}`);
     }
   };
-  const handleVerify = async () => {
+
+  const handleFinalize = async () => {
     try {
-      const response = await fetch('http://localhost:5000/calculate-verification', {
-        method: 'POST',
+      const res = await fetch("http://localhost:5000/finalize-predicate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
       }
 
-      const result = await response.json();
-      setResponseMessage(`Success: ${result.message}`);
-    } catch (error) {
-      console.error('Error Verify:', error);
-      setResponseMessage(`Error: ${error.message}`);
+      const data = await res.json();
+      console.log("Finalize result:", data);
+      alert("Predicate results finalized successfully!");
+    } catch (err) {
+      console.error("Error finalizing predicates:", err);
+      alert("Error finalizing predicates, check console.");
     }
   };
+
   const baseButtonStyle = {
     padding: '8px 16px',
     border: 'none',
@@ -53,14 +57,22 @@ const DataExtractor: React.FC = () => {
 
   return (
     <div>
-      <div><strong>Start verification</strong></div>
+      <div><strong>Step 1: Calculation the sub-predicate</strong></div>
       <div style={{ display: 'flex', alignItems: 'center', marginTop: '20px' }}>
-        <button onClick={handleVerify} style={blueButton}>
-          Save Data to Database
+        <button onClick={handleCalResult} style={blueButton}>
+          Save Verification Result to Database
         </button>
       </div>
+
+      <div><strong>Step 2: Summarize predicate</strong></div>
+      <div style={{ display: 'flex', alignItems: 'center', marginTop: '20px' }}>
+        <button onClick={handleFinalize} style={blueButton}>
+          Save Final Result to Database
+        </button>
+      </div>
+
     </div>
   );
 };
 
-export default DataExtractor;
+export default VerificationExecutor;

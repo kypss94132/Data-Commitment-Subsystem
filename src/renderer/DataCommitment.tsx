@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import ParserContent from './components/ParserGenerator';
-import PredicatExtractor from './components/PredicateExtractor';
-import DataExtractor from './components/DataExtractor';
+import PredicateContent from './components/PredicateExtractor';
+import DataContent from './components/DataExtractor';
+import VerificationContent from './components/VerificationExecutor';
 import './DataCommitment.css'; // Optional: CSS file for styling
 
 const Layout: React.FC = () => {
@@ -29,10 +30,13 @@ const Layout: React.FC = () => {
               {content === 'test1' && <ParserContent/>}
 
               {/* Conditionally render PredicatExtractor for "test2" */}
-              {content === 'test2' && <PredicatExtractor/>}
+              {content === 'test2' && <PredicateContent/>}
 
               {/* Conditionally render DataExtractor for "test3" */}
-              {content === 'test3' && <DataExtractor/>}
+              {content === 'test3' && <DataContent/>}
+
+              {/* Conditionally render DataExtractor for "test3" */}
+              {content === 'test4' && <VerificationContent/>}
           </div>
       </div>
   );
