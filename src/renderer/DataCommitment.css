@@ -10,7 +10,7 @@
 }
 
 .left-pane {
-    background-color: #383e47;
+    background-color: #e2e2e2;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -38,3 +38,16 @@
     font-size: 16px;
     cursor: pointer;
 }
+
+/* Hover effect with rounded corners */
+.left-button:hover {
+    background-color: #b3b3b3; 
+    border-radius: 8px; 
+    transition: background-color 0.2s ease, border-radius 0.2s ease;
+  }
+  
+  /* Active (clicked) state with same rounded look */
+  .left-button.active {
+    background-color: #b3b3b3; 
+    border-radius: 8px; 
+  }

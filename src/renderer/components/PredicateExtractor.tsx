@@ -28,19 +28,18 @@ const PredicateExtractor: React.FC = () => {
     cursor: 'pointer',
     fontWeight: 'bold',
   };
-
-  const blueButton = {
+  const greenButton = {
     ...baseButtonStyle,
-    backgroundColor: '#007BFF',
+    backgroundColor: '#28a745',
     color: '#fff',
   };
 
   return (
-    <div>
-      <div><strong>Extract Predicates from Token File and Save to Database</strong></div>
+    <div style={{ padding: '30px', maxWidth: '700px', margin: '0 auto', fontFamily: 'sans-serif' }}>
+      <div><strong>Extract Predicates to Database</strong></div>
       <div style={{ display: 'flex', alignItems: 'center', marginTop: '20px' }}>
-        <button onClick={handleExtractTokens} style={blueButton}>
-          Save Predicates to Database
+        <button onClick={handleExtractTokens} style={greenButton}>
+          Save to Database
         </button>
       </div>
     </div>

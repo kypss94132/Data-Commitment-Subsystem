@@ -56,7 +56,7 @@ const VerificationExecutor: React.FC = () => {
   };
 
   return (
-    <div>
+    <div style={{ padding: '30px', maxWidth: '700px', margin: '0 auto', fontFamily: 'sans-serif' }}>
       <div><strong>Step 1: Calculation the sub-predicate</strong></div>
       <div style={{ display: 'flex', alignItems: 'center', marginTop: '20px' }}>
         <button onClick={handleCalResult} style={blueButton}>

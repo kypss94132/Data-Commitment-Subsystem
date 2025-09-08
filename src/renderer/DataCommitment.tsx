@@ -15,28 +15,40 @@ const Layout: React.FC = () => {
   return (
       <div className="container">
           <div className="left-pane">
-              <button className="left-button" onClick={() => handleButtonClick('test1')}>Parser Generator</button>
-              <button className="left-button" onClick={() => handleButtonClick('test2')}>Predicate Extractor</button>
-              <button className="left-button" onClick={() => handleButtonClick('test3')}>Data Extractor</button>
-              <button className="left-button" onClick={() => handleButtonClick('test4')}>Verification Extractor</button>
-          </div>
+          <button
+            className={`left-button ${content === 'parser' ? 'active' : ''}`}
+            onClick={() => handleButtonClick('parser')}>
+            Parser Generator
+          </button>
+          <button
+            className={`left-button ${content === 'predicate' ? 'active' : ''}`}
+            onClick={() => handleButtonClick('predicate')}>
+            Predicate Extractor
+          </button>
+          <button
+            className={`left-button ${content === 'data' ? 'active' : ''}`}
+            onClick={() => handleButtonClick('data')}>
+            Data Extractor
+          </button>
+          <button
+            className={`left-button ${content === 'verification' ? 'active' : ''}`}
+            onClick={() => handleButtonClick('verification')}>
+            Verification Extractor
+          </button>
+      </div>      
           <div className="right-pane">
-              <h2></h2>
               
-              {/* Display content text */}
-              <p>{content || 'Select a button to see content here'}</p>
-
               {/* Conditionally render ParserContent for "test1" */}
-              {content === 'test1' && <ParserContent/>}
+              {content === 'parser' && <ParserContent/>}
 
               {/* Conditionally render PredicatExtractor for "test2" */}
-              {content === 'test2' && <PredicateContent/>}
+              {content === 'predicate' && <PredicateContent/>}
 
               {/* Conditionally render DataExtractor for "test3" */}
-              {content === 'test3' && <DataContent/>}
+              {content === 'data' && <DataContent/>}
 
               {/* Conditionally render DataExtractor for "test3" */}
-              {content === 'test4' && <VerificationContent/>}
+              {content === 'verification' && <VerificationContent/>}
           </div>
       </div>
   );

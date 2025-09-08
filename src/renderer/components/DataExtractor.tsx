@@ -28,19 +28,18 @@ const DataExtractor: React.FC = () => {
     cursor: 'pointer',
     fontWeight: 'bold',
   };
-
-  const blueButton = {
+  const greenButton = {
     ...baseButtonStyle,
-    backgroundColor: '#007BFF',
+    backgroundColor: '#28a745',
     color: '#fff',
   };
 
   return (
-    <div>
-      <div><strong>Extract Data from Predicate Table for verification and Save to Database</strong></div>
+    <div style={{ padding: '30px', maxWidth: '700px', margin: '0 auto', fontFamily: 'sans-serif' }}>
+      <div><strong>Extract Verification Data To DataBase</strong></div>
       <div style={{ display: 'flex', alignItems: 'center', marginTop: '20px' }}>
-        <button onClick={handleExtractData} style={blueButton}>
-          Save Data to Database
+        <button onClick={handleExtractData} style={greenButton}>
+          Save to Database
         </button>
       </div> 
     </div>
