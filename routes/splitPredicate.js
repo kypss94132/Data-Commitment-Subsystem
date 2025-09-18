@@ -6,7 +6,7 @@ module.exports = (app) => {
     app.post('/split-predicate', (req, res) => {
         const selectQuery = 'SELECT PredicateID, PredicateText FROM predicate';
         const insertQuery = `
-          INSERT INTO verification_data (PredicateID, RawText, ConnectOperator)
+          INSERT INTO verification_data (PredicateID, SubPredicateText, ConnectOperator)
           VALUES (?, ?, ?)
         `;
       

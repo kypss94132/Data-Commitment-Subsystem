@@ -37,7 +37,7 @@ const PredicateExtractor: React.FC = () => {
   return (
     <div style={{ padding: '30px', maxWidth: '700px', margin: '0 auto', fontFamily: 'sans-serif' }}>
       <div><strong>Extract Predicates to Database</strong></div>
-      <div style={{ display: 'flex', alignItems: 'center', marginTop: '20px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px' }}>
         <button onClick={handleExtractTokens} style={greenButton}>
           Save to Database
         </button>

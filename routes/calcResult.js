@@ -23,7 +23,7 @@ function normalizeCol(name) {
 }
 
 /**
- * Parse RawText into:
+ * Parse SubPredicateText into:
  *  - numeratorCol, denominatorCol (normalized to new schema)
  *  - isAverage (boolean)
  *  - comparisons: [{ op, threshold }]
@@ -36,7 +36,9 @@ function normalizeCol(name) {
  *   hits/at_bats >= 0.3
  *   H/AB >= 0.3        (legacy; mapped via COL_ALIAS)
  */
-function parseRawText(raw) {
+// -----------------------------------------------------
+
+function parseSubPredicateText(raw) {
   if (!raw) return null;
   const s = raw.replace(/\s+/g, '');
 
@@ -144,10 +146,11 @@ function buildExistsSQL(table, numCol, denCol, op) {
 module.exports = (app) => {
   // POST /calculate-result
   app.post('/calculate-result', (req, res) => {
+    
     const selectVD = `
-      SELECT ID, PredicateID, RawText, COALESCE(SourceData, '${DEFAULT_TABLE}') AS SourceData
+      SELECT ID, PredicateID, SubPredicateText, SourceData
       FROM verification_data
-      WHERE RawText IS NOT NULL
+      WHERE SubPredicateText IS NOT NULL
     `;
 
     connection.query(selectVD, async (err, rows) => {
@@ -157,11 +160,11 @@ module.exports = (app) => {
       }
 
       const tasks = rows.map((row) => {
-        const { ID, RawText, SourceData } = row;
-        const parsed = parseRawText(RawText);
+        const { ID, SubPredicateText, SourceData } = row;
+        const parsed = parseSubPredicateText(SubPredicateText);
 
         if (!parsed) {
-          console.warn(`Cannot parse RawText for ID=${ID}:`, RawText);
+          console.warn(`Cannot parse SubPredicateText for ID=${ID}:`, SubPredicateText);
           return new Promise((resolve) => {
             connection.query(
               'UPDATE verification_data SET CalculatedResult = ? WHERE ID = ?',
@@ -261,7 +264,7 @@ module.exports = (app) => {
           });
         }
       });
-
+      
       Promise.all(tasks)
         .then(() => res.json({ message: 'CalculatedResult updated (row-wise ANY for non-Average).' }))
         .catch(() => res.status(500).json({ error: 'Unexpected error during calculation' }));

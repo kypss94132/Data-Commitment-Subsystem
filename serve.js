@@ -12,7 +12,9 @@ require('./routes/readToken')(app);
 require('./routes/extractPredicate')(app);
 require('./routes/splitPredicate')(app);
 require('./routes/calcResult')(app);
+require('./routes/setSourcePlayer')(app);
 require('./routes/finalizePredicate')(app);
+require('./routes/pruneAndRebuildXML')(app);
 
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
