@@ -38,38 +38,27 @@ contextBridge.exposeInMainWorld('file', fileHandler);
 export type ElectronHandler = typeof electronHandler;
 export type FileHandler = typeof fileHandler;
 
-// Define the extended electronAPI for selecting and executing batch files
+// Define electronAPI for ParserGenerator
+
 contextBridge.exposeInMainWorld('electronAPI', {
-  // Select the BAT file
-  selectBatFile: async () => {
-    const result = await ipcRenderer.invoke('select-bat-file');
+
+  selectInput: async () => {
+    const result = await ipcRenderer.invoke('select-input-file'); // go to main.ts for select dialog setting
+    return result;
+  },
+ 
+  selectOutput: async () => {
+    const result = await ipcRenderer.invoke('select-output-file'); // go to main.ts for output dialog setting
     return result;
   },
 
-  // Run BAT file without arguments (legacy method)
-  runBatFile: (filePath: string) => {
-    ipcRenderer.send('run-bat-file', filePath);
+  selectBat: async () => {
+    const result = await ipcRenderer.invoke('select-bat-file'); // go to main.ts for select dialog setting
+    return result;
   },
 
-  // Listen for response from the main process after BAT file runs
-  onBatFileResponse: (callback: (message: string) => void) =>
-    ipcRenderer.on('bat-file-response', (event, message) => {
-      callback(message);
-    }),
-
-  // NEW: Select input XML file
-  selectInputFile: async () => {
-    return await ipcRenderer.invoke('select-input-file');
-  },
-
-  // NEW: Select output TXT file
-  selectOutputFile: async () => {
-    return await ipcRenderer.invoke('select-output-file');
-  },
-
-  // NEW: Run BAT file with input and output arguments
-  runBatWithArgs: async (data: { batPath: string; inputPath: string; outputPath: string }) => {
-    return await ipcRenderer.invoke('run-bat-with-args', data);
+  runBat: (opts: { batPath: string; inputPath: string; outputPath: string }) => {
+    return ipcRenderer.invoke('run-bat-with-args', opts); // go to main.ts for execution setting
   },
 });
 

@@ -1,10 +1,9 @@
 .container {
     display: flex;
-    height: 100vh; /* Full-height layout */
+    height: 100%;
 }
-
+/*Left pane = menu, Right pane = its content*/
 .left-pane, .right-pane {
-    /*flex: 1;*/
     padding: 20px;
     box-sizing: border-box;
 }
@@ -17,12 +16,6 @@
     
 }
 
-/*
-.right-pane {
-    background-color: #344869;
-}
-*/
-/* Style for left pane buttons */
 .left-button {
     width: 80%;
     padding: 10px;
@@ -30,7 +23,6 @@
     cursor: pointer;
 }
 
-/* Style for the right pane button */
 .right-button {
     background-color: #565555;
     margin-top: 20px;
@@ -39,15 +31,43 @@
     cursor: pointer;
 }
 
-/* Hover effect with rounded corners */
+/* Mouse Hover effect*/
 .left-button:hover {
     background-color: #b3b3b3; 
     border-radius: 8px; 
-    transition: background-color 0.2s ease, border-radius 0.2s ease;
+    transition: all 250ms ease-in-out;
   }
   
-  /* Active (clicked) state with same rounded look */
-  .left-button.active {
-    background-color: #b3b3b3; 
-    border-radius: 8px; 
-  }
+/* clicked button */
+.left-button.active {
+  background-color: #b3b3b3; 
+  border-radius: 8px; 
+}
+
+.button-base {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+  
+.button-blue {
+  background-color: #007BFF;
+  color: #fff;
+}
+  
+.button-green {
+  background-color: #28a745;
+  color: #fff;
+}
+  
+.button-outline-blue {
+  border: 1px solid #007BFF;
+  background-color: transparent;
+  color: #007BFF;
+  margin-top: 10px;
+}
+
+
+  

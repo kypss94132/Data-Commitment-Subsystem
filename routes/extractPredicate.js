@@ -1,4 +1,3 @@
-// routes/extractPredicate.js
 const connection = require('./index');
 const { extractContent } = require('./sharedModule');
 
@@ -16,14 +15,13 @@ module.exports = (app) => {
 
     connection.query(selectQuery, (err, results) => {
       if (err) {
-        console.error('Error fetching tokens:', err);
-        return res.status(500).json({ error: 'Error fetching tokens from database' });
+        return res.status(500).json({ error: 'fetching error' });
       }
       if (results.length === 0) {
-        return res.status(400).json({ error: 'No tokens found in database' });
+        return res.status(400).json({ error: 'No tokens found' });
       }
 
-      let inPredicate = false;
+      let insidePredicate = false;
       let extractedContent = '';
       let startTokenId = 0;
       let endTokenId = 0;
@@ -34,14 +32,14 @@ module.exports = (app) => {
         const text = results[i].Text;
         const type = results[i].Type;
 
-        if (!inPredicate) {
+        if (!insidePredicate) {
           // Detect <predicate> start
           if (
             text === '<' && type === '<' && i + 2 < results.length &&
             results[i + 1].Text === 'predicate' && results[i + 1].Type === 'ID' &&
             results[i + 2].Text === '>' && results[i + 2].Type === '>'
           ) {
-            inPredicate = true;
+            insidePredicate = true;
             startTokenId = results[i].Id;
             i += 2;
             continue;
@@ -57,7 +55,6 @@ module.exports = (app) => {
             endTokenId = results[i + 3].Id;
             const finalContent = extractContent(extractedContent);
 
-            // ** Pass `0` for Disjunction and Conjunction **
             insertPromises.push(new Promise((resolve, reject) => {
               connection.query(insertQuery, [startTokenId, endTokenId, finalContent], (err2) => {
                 if (err2) return reject(err2);
@@ -65,7 +62,7 @@ module.exports = (app) => {
               });
             }));
 
-            inPredicate = false;
+            insidePredicate = false;
             extractedContent = '';
             i += 3;
           } else {
@@ -75,8 +72,8 @@ module.exports = (app) => {
       }
 
       Promise.all(insertPromises)
-        .then(() => res.json({ message: `Processed tokens. ${insertPromises.length} predicates extracted.` }))
-        .catch(() => res.status(500).json({ error: 'Error inserting predicates into database' }));
+        .then(() => res.json({ message: `${insertPromises.length} predicates extracted.` }))
+        .catch(() => res.status(500).json({ error: 'Error inserting predicates' }));
     });
   });
 };

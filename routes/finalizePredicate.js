@@ -1,4 +1,3 @@
-// routes/finalizePredicate.js
 const connection = require('./index');
 
 // If a group has no explicit operator (all NULL), how to combine multiple rows?
@@ -118,7 +117,7 @@ module.exports = (app) => {
             'UPDATE predicate SET VerificationResult = ? WHERE PredicateID = ?',
             [finalVal, predicateId],
             (uErr) => {
-              if (uErr) console.error(`Update predicate.VerificationResult failed for PredicateID=${predicateId}:`, uErr);
+              if (uErr) console.error(`Update VerificationResult failed`, uErr);
               resolve();
             }
           );
@@ -126,8 +125,8 @@ module.exports = (app) => {
       }
 
       Promise.all(tasks)
-        .then(() => res.json({ message: 'predicate.VerificationResult updated for all PredicateID groups.' }))
-        .catch(() => res.status(500).json({ error: 'Unexpected error while updating predicate results' }));
+        .then(() => res.json({ message: 'VerificationResult updated' }))
+        .catch(() => res.status(500).json({ error: 'Unexpected error while updating' }));
     });
   });
 };

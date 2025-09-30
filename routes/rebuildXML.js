@@ -8,8 +8,7 @@ const VALID_TAG_NAMES = new Set([
 ]);
 
 module.exports = (app) => {
-  app.post('/prune-invalid-predicates', async (req, res) => {
-    console.log('📩 /prune-invalid-predicates triggered');
+  app.post('/update-ontology', async (req, res) => {
     try {
       const [invalidPredicates] = await connection.promise().query(`
         SELECT StartTokenID, EndTokenID 
@@ -40,31 +39,26 @@ module.exports = (app) => {
             const next3 = allTokens[j + 3]?.Text?.trim();
 
             if (!toEndID && t === '<' && next1 === '/' && next2 === 'to' && next3 === '>') {
-              console.log(`🔍 Found </to> at ID: ${token.ID}`);
               toEndID = token.ID;
               continue;
             }
 
             if (toEndID && !toStartID && t === '<' && next1 === 'to' && next2 === '>') {
-              console.log(`🔍 Found <to> at ID: ${token.ID}`);
               toStartID = token.ID;
               continue;
             }
 
             if (!fromEndID && t === '<' && next1 === '/' && next2 === 'from' && next3 === '>') {
-              console.log(`🔍 Found </from> at ID: ${token.ID}`);
               fromEndID = token.ID;
               continue;
             }
 
             if (fromEndID && !fromStartID && t === '<' && next1 === 'from' && next2 === '>') {
-              console.log(`🔍 Found <from> at ID: ${token.ID}`);
               fromStartID = token.ID;
               continue;
             }
 
             if (!edgeStartID && t === '<' && next1 === 'edge') {
-              console.log(`🔍 Found <edge> start at ID: ${token.ID}`);
               edgeStartID = token.ID;
               continue;
             }
@@ -80,14 +74,12 @@ module.exports = (app) => {
             const next3 = allTokens[k + 3]?.Text?.trim();
 
             if (!edgeEndID && t === '<' && next1 === '/' && next2 === 'edge' && next3 === '>') {
-              console.log(`🔍 Found </edge> end at ID: ${token.ID}`);
               edgeEndID = token.ID + 3;
               break;
             }
           }
 
           if (edgeStartID !== null && edgeEndID !== null) {
-            console.log('🧹 Removing <edge> block:', edgeStartID, '-', edgeEndID);
             await connection.promise().query(
               `DELETE FROM tokens WHERE ID BETWEEN ? AND ?`,
               [edgeStartID, edgeEndID]
@@ -96,7 +88,6 @@ module.exports = (app) => {
           }
 
           if (fromStartID !== null && fromEndID !== null && fromEndID > fromStartID) {
-            console.log('✅ Removing <from> block:', fromStartID, '-', fromEndID + 3);
             await connection.promise().query(
               `DELETE FROM tokens WHERE ID BETWEEN ? AND ?`,
               [fromStartID, fromEndID + 3]
@@ -104,14 +95,12 @@ module.exports = (app) => {
           }
 
           if (toStartID !== null && toEndID !== null && toEndID > toStartID) {
-            console.log('✅ Removing <to> block:', toStartID, '-', toEndID + 3);
             await connection.promise().query(
               `DELETE FROM tokens WHERE ID BETWEEN ? AND ?`,
               [toStartID, toEndID + 3]
             );
           }
 
-          console.log('✅ Removing <predicate> block:', StartTokenID, '-', EndTokenID);
           await connection.promise().query(
             `DELETE FROM tokens WHERE ID BETWEEN ? AND ?`,
             [StartTokenID, EndTokenID]
@@ -216,17 +205,14 @@ module.exports = (app) => {
         rawXml += token;
       }
 
-      const outputPath = path.join(__dirname, 'final_output_zero_space.xml');
+      const outputPath = path.join(__dirname, 'Updated Ontology.xml');
       fs.writeFileSync(outputPath, rawXml, 'utf-8');
 
-      console.log('✅ XML rebuild completed. Output:', outputPath);
-
       res.json({
-        message: '✅ XML rebuilt after pruning edge, predicate, to, and from blocks.',
+        message: 'XML rebuilt!',
         outputFile: outputPath
       });
     } catch (error) {
-      console.error('❌ Error:', error);
       res.status(500).json({ error: 'Failed to rebuild XML' });
     }
   });

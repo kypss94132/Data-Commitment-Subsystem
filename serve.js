@@ -8,13 +8,13 @@ app.use(cors());
 app.use(express.json());
 
 // Register routes
-require('./routes/readToken')(app);
+require('./routes/saveToken')(app);
 require('./routes/extractPredicate')(app);
 require('./routes/splitPredicate')(app);
 require('./routes/calcResult')(app);
-require('./routes/setSourcePlayer')(app);
+require('./routes/saveSource')(app);
 require('./routes/finalizePredicate')(app);
-require('./routes/pruneAndRebuildXML')(app);
+require('./routes/rebuildXML')(app);
 
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);

@@ -1,3 +1,4 @@
+// This file tells TypeScript what exists on window
 import { ElectronHandler, FileHandler } from '../main/preload';
 
 declare global {
@@ -5,14 +6,18 @@ declare global {
   interface Window {
     electron: ElectronHandler;
     file: FileHandler;
-    // for parser
+    // For ParserGenerator, connect with preload.ts
     electronAPI: {
-      selectBatFile: () => Promise<{ canceled: boolean; filePath: string | null }>;
-      runBatFile: (filePath: string) => void;
-      onBatFileResponse: (callback: (message: string) => void) => void;
-  };
+      selectInput: () => Promise<{ canceled: boolean; filePaths: string[] }>;
+      selectOutput: () => Promise<{ canceled: boolean; filePath: string }>;
+      selectBat: () => Promise<{ canceled: boolean; filePath: string | null }>;
+      runBat: (opts: {
+        inputPath: string;
+        outputPath: string;
+        batPath: string;
+      }) => Promise<{ message: string }>;
+    };
   }
-
 }
 
 export {};

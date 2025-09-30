@@ -1,30 +1,25 @@
-// GET read-token
-// Route to read and save content of token.txt to MySQL
 const fs = require('fs');
 const readline = require('readline');
 const connection = require('./index');
 
 module.exports = (app) => {
-  app.get('/read-token', (req, res) => {
-    // Adjust path as needed
-    const filePath = 'D:\\DIS_platform\\tokens.txt';
-    
-    // Check if file exists
-    if (!fs.existsSync(filePath)) {
-      return res.status(500).json({ error: 'token.txt does not exist at the specified path' });
+  app.post('/save-token', (req, res) => {
+    const filePath = req.body.path;
+
+    if (!filePath || !fs.existsSync(filePath)) {
+      return res.status(400).json({ error: 'Token file does not exist' });
     }
 
     const rl = readline.createInterface({
       input: fs.createReadStream(filePath),
-      output: process.stdout,
-      terminal: false,
+      crlfDelay: Infinity,
     });
 
-    const textValues = [];
-    const typeValues = [];
+    const textContent = [];
+    const typeContent = [];
 
     rl.on('line', (line) => {
-      // Parse the line to extract id, text, and type
+      // Generated token file has specific writing style
       const idStart = line.indexOf('@') + 1;
       const idEnd = line.indexOf(',');
       const id = line.substring(idStart, idEnd);
@@ -41,40 +36,38 @@ module.exports = (app) => {
         type = line.substring(typeStart + 1, typeEnd - 1);
       }
 
-      // Add to the arrays if valid
+      // Add to array if valid
       if (text && type) {
-        textValues.push(text);
-        typeValues.push(type);
+        textContent.push(text);
+        typeContent.push(type);
       }
     });
 
     rl.on('close', () => {
-      if (!textValues.length || !typeValues.length) {
-        return res.status(500).json({ error: 'No valid data found in token.txt' });
+      if (!textContent.length || !typeContent.length) {
+        return res.status(500).json({ error: 'No valid data found' });
       }
 
-      // Save the extracted values into the database
+      // Save values into DB
       const query = 'INSERT INTO tokens (Text, Type) VALUES (?, ?)';
       let insertCount = 0;
 
-      textValues.forEach((text, index) => {
-        const type = typeValues[index] || null;
+      textContent.forEach((text, index) => {
+        const type = typeContent[index] || null;
         connection.query(query, [text, type], (err) => {
           if (err) {
-            console.error('Error saving to database:', err);
             return res.status(500).json({ error: 'Error saving to database' });
           }
           insertCount++;
-          if (insertCount === textValues.length) {
-            res.json({ message: 'File content saved to database successfully' });
+          if (insertCount === textContent.length) {
+            res.json({ message: 'Content saved to database successfully!' });
           }
         });
       });
     });
 
     rl.on('error', (err) => {
-      console.error('Error reading token.txt:', err);
-      res.status(500).json({ error: `Error reading token.txt: ${err.message}` });
+      res.status(500).json({ error: `Error reading TXT: ${err.message}` });
     });
   });
 };

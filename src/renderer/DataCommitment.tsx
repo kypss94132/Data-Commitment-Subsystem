@@ -1,53 +1,47 @@
 import React, { useState } from 'react';
+import './DataCommitment.css'; 
 import ParserContent from './components/ParserGenerator';
 import PredicateContent from './components/PredicateExtractor';
 import DataContent from './components/DataExtractor';
 import VerificationContent from './components/VerificationExecutor';
-import './DataCommitment.css'; // Optional: CSS file for styling
 
 const Layout: React.FC = () => {
-  const [content, setContent] = useState<string>(''); // State to track right pane content
+  const [content, setContent] = useState<string>(''); // Track right pane content
 
   const handleButtonClick = (text: string) => {
-      setContent(text); // Update content based on button click
+      setContent(text); // Update content based on what button is clicked
   };
 
   return (
       <div className="container">
+          {/* Left side menu*/}
           <div className="left-pane">
           <button
-            className={`left-button ${content === 'parser' ? 'active' : ''}`}
+            className={`left-button ${content === 'parser' && 'active'}`}
             onClick={() => handleButtonClick('parser')}>
             Parser Generator
           </button>
           <button
-            className={`left-button ${content === 'predicate' ? 'active' : ''}`}
+            className={`left-button ${content === 'predicate' && 'active'}`}
             onClick={() => handleButtonClick('predicate')}>
             Predicate Extractor
           </button>
           <button
-            className={`left-button ${content === 'data' ? 'active' : ''}`}
+            className={`left-button ${content === 'data' && 'active'}`}
             onClick={() => handleButtonClick('data')}>
             Data Extractor
           </button>
           <button
-            className={`left-button ${content === 'verification' ? 'active' : ''}`}
+            className={`left-button ${content === 'verification' && 'active'}`}
             onClick={() => handleButtonClick('verification')}>
             Verification Extractor
           </button>
-      </div>      
-          <div className="right-pane">
-              
-              {/* Conditionally render ParserContent for "test1" */}
+      </div>     
+          {/* Right side content*/} 
+          <div className="right-pane"> 
               {content === 'parser' && <ParserContent/>}
-
-              {/* Conditionally render PredicatExtractor for "test2" */}
               {content === 'predicate' && <PredicateContent/>}
-
-              {/* Conditionally render DataExtractor for "test3" */}
               {content === 'data' && <DataContent/>}
-
-              {/* Conditionally render DataExtractor for "test3" */}
               {content === 'verification' && <VerificationContent/>}
           </div>
       </div>

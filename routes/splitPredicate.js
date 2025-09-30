@@ -1,5 +1,3 @@
-// For DataExtractor, API to copy PredicateID from predicate to verification_data
-// routes/splitPredicate.js
 const connection = require('./index');
 
 module.exports = (app) => {
@@ -12,8 +10,7 @@ module.exports = (app) => {
       
         connection.query(selectQuery, (err, results) => {
           if (err) {
-            console.error('Error fetching predicates:', err);
-            return res.status(500).json({ error: 'Error fetching predicates' });
+            return res.status(500).json({ error: 'fetching error' });
           }
       
           const insertPromises = [];
@@ -23,7 +20,8 @@ module.exports = (app) => {
       
             let operator = null;
             let subPredicates = [PredicateText];
-      
+            
+            //Split predicate if contains 'AND' 'OR'
             if (PredicateText.includes('AND')) {
               operator = 'AND';
               subPredicates = PredicateText.split('AND');
@@ -48,7 +46,7 @@ module.exports = (app) => {
           });
       
           Promise.all(insertPromises)
-            .then(() => res.json({ message: 'Verification data inserted successfully.' }))
+            .then(() => res.json({ message: 'Inserted successfully!'}))
             .catch(err => {
               console.error('Error inserting verification data:', err);
               res.status(500).json({ error: 'Insertion failed' });

@@ -1,7 +1,6 @@
-// routes/calcResult.js
 const connection = require('./index');
 
-const DEFAULT_TABLE = 'player'; // change if your table name differs
+const DEFAULT_TABLE = 'player'; 
 const EPS = 1e-9;
 
 // Map legacy/short names to your new column names

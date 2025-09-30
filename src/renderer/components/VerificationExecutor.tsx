@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 
 const VerificationExecutor: React.FC = () => {
-  const [responseMessage, setResponseMessage] = useState<string>('');
+  const [calResult, setcalResult] = useState<string>('');
+  const [sourceResult, setsourceResult] = useState<string>('');
+  const [finalizeResult, setfinalizeResult] = useState<string>('');
+  const [rebuildResult, setrebuildResult] = useState<string>('');
 
   const handleCalResult = async () => {
     try {
@@ -10,26 +13,28 @@ const VerificationExecutor: React.FC = () => {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+        throw new Error(`API error: ${response.status}`);
       }
 
       const result = await response.json();
-      setResponseMessage(`Success: ${result.message}`);
+      setcalResult('Saved successfully!');
     } catch (error) {
-      console.error('Error extracting predicates:', error);
-      setResponseMessage(`Error: ${error.message}`);
+      setcalResult(`Error: ${error.message}`);
     }
   };
 
-  const handleSetSourceData = async () => {
-    const res = await fetch('http://localhost:5000/set-source-player', {
-      method: 'POST'
-    });
+  const handleSourceData = async () => {
+    try {
+      const res = await fetch('http://localhost:5000/save-source', {
+        method: 'POST'
+      });
   
-    const result = await res.json();
-    console.log(result.message);
+      const result = await res.json();
+      setsourceResult('Saved successfully!');
+    } catch (error) {
+      setsourceResult(`Error: ${error.message}`);
+    }
   };
-
 
   const handleFinalize = async () => {
     try {
@@ -37,87 +42,74 @@ const VerificationExecutor: React.FC = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
       });
-
+  
       if (!res.ok) {
         throw new Error(`HTTP error! status: ${res.status}`);
       }
-
+  
       const data = await res.json();
-      console.log("Finalize result:", data);
-      alert("Predicate results finalized successfully!");
-    } catch (err) {
-      console.error("Error finalizing predicates:", err);
-      alert("Error finalizing predicates, check console.");
+      setfinalizeResult('Saved successfully!');
+    } catch (err: any) {
+      setfinalizeResult(`Error: ${err.message}`);
     }
   };
-
-  const handlePruneAndRebuild = async () => {
-    const res = await fetch('http://localhost:5000/prune-invalid-predicates', {
-      method: 'POST'
-    });
   
-    const data = await res.json();
-    console.log('Output XML path:', data.outputFile);
+  const handleRebuildOntology = async () => {
+    try {
+      const res = await fetch('http://localhost:5000/update-ontology', {
+        method: 'POST'
+      });
+  
+      const data = await res.json();
+      setrebuildResult('Output File successfully!');
+    } catch (err: any) {
+      setrebuildResult(`Error: ${err.message}`);
+    }
   };
   
-  const baseButtonStyle = {
-    padding: '8px 16px',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    fontWeight: 'bold',
-  };
-
-  const blueButton = {
-    ...baseButtonStyle,
-    backgroundColor: '#007BFF',
-    color: '#fff',
-  };
-
-  const greenButton = {
-    ...baseButtonStyle,
-    backgroundColor: '#28a745',
-    color: '#fff',
-  };
-  const outlineBlueButton = {
-    ...baseButtonStyle,
-    border: '1px solid #007BFF',
-    backgroundColor: 'transparent',
-    color: '#007BFF',
-    marginTop: '10px',
-  };
-
   return (
     <div style={{ padding: '30px', maxWidth: '700px', margin: '0 auto', fontFamily: 'sans-serif' }}>
       <div><strong>Step 1: Calculate Verification Data</strong></div>
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px' }}>
-        <button onClick={handleCalResult} style={greenButton}>
+        <button className="button-base button-green" onClick={handleCalResult}>
         Save Calculation Result to Database
         </button>
+        <div style={{ marginLeft:'150px', marginTop: '20px', fontSize: '0.85em', color: '#666' }}>
+        {calResult || 'Not saved yet'}
+        </div>
       </div>
       <hr style={{ margin: '20px 0' }} />
 
       <div><strong>Step 2: Fill in Source Data</strong></div>
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px' }}>
-        <button onClick={handleSetSourceData} style={greenButton}>
+        <button className="button-base button-green" onClick={handleSourceData}>
         Save Source Data to Database
         </button>
+        <div style={{ marginLeft:'150px', marginTop: '20px', fontSize: '0.85em', color: '#666' }}>
+        {sourceResult || 'Not saved yet'}
+        </div>
       </div>
       <hr style={{ margin: '20px 0' }} />
       
       <div><strong>Step 3: Finalize and Calculate Overall Predicate Result</strong></div>
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px' }}>
-        <button onClick={handleFinalize} style={greenButton}>
+        <button className="button-base button-green" onClick={handleFinalize}>
           Save Final Result to Database
         </button>
+        <div style={{ marginLeft:'150px', marginTop: '20px', fontSize: '0.85em', color: '#666' }}>
+        {finalizeResult || 'Not saved yet'}
+        </div>
       </div>
       <hr style={{ margin: '20px 0' }} />
 
       <div><strong>Step 4: Get Final Ontology File</strong></div>
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px' }}>
-        <button onClick={handlePruneAndRebuild} style={blueButton}>
+        <button className="button-base button-blue" onClick={handleRebuildOntology}>
           Download XML File
         </button>
+        <div style={{ marginLeft:'150px', marginTop: '20px', fontSize: '0.85em', color: '#666' }}>
+        {rebuildResult || 'No Output yet'}
+        </div>
       </div>
 
     </div>

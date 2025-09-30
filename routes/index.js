@@ -2,10 +2,13 @@
 const mysql = require('mysql2');
 
 const connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',                
-  password: 'kypss94132',     
+  host: 'disel-editor-db.mysql.database.azure.com',
+  user: 'standarduser',                
+  password: 'Password123',     
   database: 'parser',
+  ssl: {
+    rejectUnauthorized: true // SSL is required by Azure
+  }
 });
 
 // Establish connection to MySQL
