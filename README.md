@@ -1,21 +1,9 @@
-# DIS Platform
+# Project Overview
+This project introduces a new feature to the existing DISEL Editor, extending its capabilities to support domain adequacy through the implementation of a Data Commitment Subsystem. For a comprehensive overview of the background and motivation behind this work, please refer to the accompanying project report. This repository is focused on the technical implementation and usage instructions.
 
-## Introduction
+The project is built upon a version of the DISEL Editor originally provided by [Yijie Wang](https://github.com/YbJerry) [^sh]. It includes both the original source code and portions of the README content authored by [Yijie Wang](https://github.com/YbJerry) [^sh]. 
 
-This software is the new and rebuilt version of DISEL Editor from our research team. Because we found that C++ and Qt is not easy to deploy on the different platforms. Our researchers always trouble with how to link the dynamic linking library and facing many unexpected problems when compiling software. Such as Antlr4 only provides binary version of MSVC and the authors of RCpp and RInside refused to supply the compatible code in MSVC.
-
-The new version is built within Electron and React. We also supply new DIS Ontology API in JavaScript/TypeScript.
-
-<!-- <br> -->
-
-<!-- <div align="center">
-
-[![Build Status][github-actions-status]][github-actions-url]
-[![Github Tag][github-tag-image]][github-tag-url]
-
-</div> -->
-
-## Install
+## Install DISEL Editor
 
 Clone the repo and install dependencies:
 
@@ -25,7 +13,7 @@ cd DIS_platform
 npm install
 ```
 
-## Starting Development
+## Running DISEL Editor
 
 Start the app in the `dev` environment:
 
@@ -41,6 +29,18 @@ To package apps for the local platform:
 npm run package
 ```
 
+## Running the API
+This project includes API functionality for data extraction, storage, and database connectivity, primarily supporting data commitment subsystem. To run the API, you must have [Node.js](https://nodejs.org/en) installed on your system.  
+**Important:** The following command is required to start when running the subsystem. Failing to run this may result in runtime errors.
+
+```bash
+node serve.js
+```
+
+## Download MySQL Workbench(optional)
+When you click the ''Save Data to Database'' button in the DISEL Editor frontend, the saved data can be viewed and verified using [MySQL Workbench](https://www.mysql.com/products/workbench/).  MySQL Workbench provides a graphical interface to visualize, query, and manage the stored data in the database.  
+**Note:** This tool is optional. If you're proficient with MySQL, you can also use the command line or terminal to run SQL queries directly without relying on a graphical interface.
+
 <!-- ## Docs
 
 See our [docs and guides here](https://electron-react-boilerplate.js.org/docs/installation) -->
@@ -53,6 +53,7 @@ See our [docs and guides here](https://electron-react-boilerplate.js.org/docs/in
 - Yanyan Wang [^sh]
 - Ridha Khedri [^mc]
 - Yihai Chen [^sh]
+- Yi-Leng Chen [^mc] (For data commitment subsystem part)
 
 [^sh]: Shanghai University
 [^mc]: McMaster University
